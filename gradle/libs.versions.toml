@@ -11,7 +11,7 @@ slf4md = "1.0.1"
 distributor = "4.2.0-SNAPSHOT"
 
 # static analysis
-errorprone-core = "2.32.0"
+errorprone-core = "2.36.0"
 nullaway = "0.11.3"
 jspecify = "1.0.0"
 
