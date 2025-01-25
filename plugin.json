@@ -1,0 +1,13 @@
+{
+  "displayName": "TemplatePlugin",
+  "name": "template",
+  "description": "A template plugin for Mindustry to get you started quickly.",
+  "version": "5.0.0",
+  "author": "xpdustry",
+  "repo": "xpdustry/template-plugin",
+  "main": "com.xpdustry.template.TemplatePlugin",
+  "minGameVersion": "146",
+  "java": true,
+  "hidden": true,
+  "dependencies": ["distributor-common"]
+}
