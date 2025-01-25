@@ -18,7 +18,6 @@ plugins {
 val metadata = ModMetadata.fromJson(rootProject.file("plugin.json"))
 if (indraGit.headTag() == null) metadata.version += "-SNAPSHOT"
 group = "com.xpdustry"
-val rootPackage = "com.xpdustry.template"
 version = metadata.version
 description = metadata.description
 
@@ -34,19 +33,17 @@ repositories {
         name = "xpdustry-releases"
         mavenContent { releasesOnly() }
     }
+    maven("https://maven.xpdustry.com/snapshots") {
+        name = "xpdustry-snapshots"
+        mavenContent { snapshotsOnly() }
+    }
 }
 
 dependencies {
     compileOnly(toxopid.dependencies.arcCore)
     compileOnly(toxopid.dependencies.mindustryCore)
     compileOnly(libs.distributor.api)
-
-    testImplementation(libs.junit.api)
-    testRuntimeOnly(libs.junit.engine)
-
-    compileOnly(libs.checker.qual)
-    testCompileOnly(libs.checker.qual)
-
+    compileOnlyApi(libs.jspecify)
     annotationProcessor(libs.nullaway)
     errorprone(libs.errorprone.core)
 }
@@ -92,7 +89,6 @@ spotless {
         palantirJavaFormat()
         formatAnnotations()
         importOrder("", "\\#")
-        custom("no-wildcard-imports") { it.apply { if (contains("*;\n")) error("No wildcard imports allowed") } }
         licenseHeaderFile(rootProject.file("HEADER.txt"))
         bumpThisNumberIfACustomStepChanges(1)
     }
@@ -105,9 +101,7 @@ val generateMetadataFile by tasks.registering {
     inputs.property("metadata", metadata)
     val output = temporaryDir.resolve("plugin.json")
     outputs.file(output)
-    doLast {
-        output.writeText(ModMetadata.toJson(metadata))
-    }
+    doLast { output.writeText(ModMetadata.toJson(metadata)) }
 }
 
 tasks.shadowJar {
@@ -128,11 +122,8 @@ tasks.withType<JavaCompile> {
     options.errorprone {
         disableWarningsInGeneratedCode = true
         disable("MissingSummary", "InlineMeSuggester")
-        if (!name.contains("test", ignoreCase = true)) {
-            check("NullAway", CheckSeverity.ERROR)
-            option("NullAway:AnnotatedPackages", rootPackage)
-            option("NullAway:TreatGeneratedAsUnannotated", true)
-        }
+        check("NullAway", if (name.contains("test", ignoreCase = true)) CheckSeverity.OFF else CheckSeverity.ERROR)
+        option("NullAway:AnnotatedPackages", "com.xpdustry.momo")
     }
 }
 
