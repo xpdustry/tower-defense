@@ -1,5 +1,5 @@
 /*
- * This file is part of TemplatePlugin. A template plugin for Mindustry to get you started quickly.
+ * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
  *
  * MIT License
  *
@@ -23,19 +23,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.template;
+package com.xpdustry.momo;
 
 import arc.util.Log;
 import mindustry.mod.Plugin;
 
-/**
- * Template plugin.
- */
 @SuppressWarnings("unused")
-public final class TemplatePlugin extends Plugin {
+public final class MoMoPlugin extends Plugin {
 
     @Override
     public void init() {
-        Log.info("Hello Template");
+        Log.info("Hello MOMO");
     }
 }
