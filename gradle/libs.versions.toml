@@ -12,7 +12,7 @@ distributor = "4.2.0-SNAPSHOT"
 
 # static analysis
 errorprone-core = "2.32.0"
-nullaway = "0.11.3"
+nullaway = "0.12.3"
 jspecify = "1.0.0"
 
 [libraries]
