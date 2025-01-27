@@ -46,6 +46,7 @@ dependencies {
     compileOnlyApi(libs.jspecify)
     annotationProcessor(libs.nullaway)
     errorprone(libs.errorprone.core)
+    implementation(libs.configurate.yaml)
 }
 
 signing {
@@ -142,5 +143,5 @@ val downloadDistributorCommon by tasks.registering(GithubAssetDownload::class) {
 }
 
 tasks.runMindustryServer {
-    mods.from(downloadSlf4md, downloadDistributorCommon)
+    mods.from(downloadSlf4md, files("libs/distributor-common.jar"))
 }
