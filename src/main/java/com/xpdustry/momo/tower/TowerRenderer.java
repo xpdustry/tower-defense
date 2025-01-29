@@ -73,7 +73,7 @@ public final class TowerRenderer implements PluginListener {
     void onTowerDrop(final TowerDropEvent event) {
         final LinkedList<LabelWrapper> closest = new LinkedList<>();
         for (final var wrapper : wrappers) {
-            if (wrapper.label.dst(event.x(), event.y()) <= 3 * Vars.tilesize) {
+            if (wrapper.label.dst(event.x(), event.y()) <= 3 * Vars.tilesize && wrapper.items.total <= 3000) {
                 closest.add(wrapper);
             }
         }
