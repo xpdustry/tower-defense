@@ -25,16 +25,6 @@
  */
 package com.xpdustry.momo.tower;
 
-import java.util.List;
-import java.util.Map;
-import mindustry.type.UnitType;
-
-public record TowerConfig(float healthMultiplier, Map<String, List<TowerDrop>> drops, Map<UnitType, UnitData> units) {
-    public TowerConfig {
-        if (healthMultiplier < 1F) {
-            throw new IllegalArgumentException("health-multiplier can't be lower than 1");
-        }
-    }
-
-    public record UnitData(List<TowerDrop> drops) {}
+public sealed interface TowerEnemyPowerUpEvent {
+    record Health(float before, float after) implements TowerEnemyPowerUpEvent {}
 }

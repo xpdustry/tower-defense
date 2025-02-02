@@ -34,6 +34,7 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 import mindustry.Vars;
@@ -50,6 +51,7 @@ import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 public final class TowerRenderer implements PluginListener {
 
+    private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("#.##");
     private static final IntMap<String> ITEM_ICONS = new IntMap<>();
 
     static {
@@ -63,6 +65,13 @@ public final class TowerRenderer implements PluginListener {
     }
 
     private final List<LabelWrapper> wrappers = new LinkedList<>();
+
+    @EventHandler
+    void onEnemyPowerIncreaseEvent(final TowerEnemyPowerUpEvent.Health event) {
+        if ((int) event.after() > (int) event.before()) {
+            Call.sendMessage("Health multiplier has increased to " + MULTIPLIER_FORMAT.format(event.after()));
+        }
+    }
 
     @EventHandler
     void onReset(final EventType.ResetEvent event) {

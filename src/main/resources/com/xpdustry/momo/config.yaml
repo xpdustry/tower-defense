@@ -1,6 +1,8 @@
 game-mode: "tower-defense"
 
 tower-defense:
+  health-multiplier: 1.03
+
   drops:
 
     tier1_drop:

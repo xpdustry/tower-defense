@@ -28,13 +28,18 @@ package com.xpdustry.momo.tower;
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
+import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.plugin.PluginListener;
+import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import com.xpdustry.momo.MoGameMode;
 import com.xpdustry.momo.MoMoPlugin;
 import mindustry.Vars;
 import mindustry.game.EventType;
+import mindustry.gen.Call;
 import mindustry.net.Administration;
 import mindustry.type.ItemSeq;
+import mindustry.world.Block;
+import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
 
 public final class TowerLogic implements PluginListener {
@@ -56,9 +61,20 @@ public final class TowerLogic implements PluginListener {
     @PlayerActionHandler
     boolean onCoreBuildInteract(final Administration.PlayerAction action) {
         if (!this.plugin.isActive(MoGameMode.TOWER_DEFENSE)) return true;
-        return !((action.type == Administration.ActionType.depositItem
-                        || action.type == Administration.ActionType.withdrawItem)
-                && action.tile.block() instanceof CoreBlock);
+        switch (action.type) {
+            case depositItem, withdrawItem -> {
+                return !(action.tile.block() instanceof CoreBlock);
+            }
+            case placeBlock -> {
+                return hasNoNearbyCore(action.block, action.tile);
+            }
+            case dropPayload -> {
+                return !(action.payload.content() instanceof Block block) || hasNoNearbyCore(block, action.tile);
+            }
+            default -> {
+                return true;
+            }
+        }
     }
 
     @EventHandler
@@ -77,5 +93,29 @@ public final class TowerLogic implements PluginListener {
         for (final var drop : data.drops()) drop.apply(items);
         Vars.state.rules.defaultTeam.core().items().add(items);
         Distributor.get().getEventBus().post(new TowerDropEvent(event.unit.x(), event.unit.y(), items));
+    }
+
+    @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
+    void onHealthMultiply() {
+        if (!Vars.state.isPlaying()) return;
+        final var previous = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
+        final var after = previous * this.plugin.getMoConfig().tower().healthMultiplier();
+        Vars.state.rules.waveTeam.rules().unitHealthMultiplier *= after;
+        Call.setRules(Vars.state.rules);
+        Distributor.get().getEventBus().post(new TowerEnemyPowerUpEvent.Health(previous, after));
+    }
+
+    private boolean hasNoNearbyCore(final Block block, final Tile tile) {
+        final int rx = tile.x + block.sizeOffset;
+        final int ry = tile.y + block.sizeOffset;
+        for (int i = rx - 1; i <= rx + block.size; i++) {
+            for (int j = ry - 1; j <= ry + block.size; j++) {
+                final var at = Vars.world.tile(i, j);
+                if (at != null && at.block() instanceof CoreBlock) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

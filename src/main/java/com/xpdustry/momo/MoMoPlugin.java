@@ -108,7 +108,13 @@ public final class MoMoPlugin extends AbstractMindustryPlugin implements MoMoAPI
                                         "Unknown unit " + name);
                             },
                             entry -> parseUnit(drops, entry.getValue())));
-            tower = new TowerConfig(drops, units);
+
+            final var multiplierNode = root.node("health-multiplier");
+            if (multiplierNode.virtual()) {
+                throw new RuntimeException("health-multiplier field missing");
+            }
+
+            tower = new TowerConfig(multiplierNode.getFloat(), drops, units);
         }
 
         MoGameMode mode = null;
