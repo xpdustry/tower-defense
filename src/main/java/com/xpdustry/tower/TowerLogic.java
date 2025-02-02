@@ -40,20 +40,12 @@ import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
 
-public final class TowerLogic implements PluginListener {
+final class TowerLogic implements PluginListener {
 
     private final TowerPlugin plugin;
 
     public TowerLogic(final TowerPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    @Override
-    public void onPluginInit() {
-        final var pathfinder = new TowerPathfinder();
-        Vars.pathfinder = pathfinder;
-        this.plugin.addListener(pathfinder);
-        this.plugin.addListener(new TowerRenderer());
     }
 
     @PlayerActionHandler

@@ -49,7 +49,7 @@ import static com.xpdustry.distributor.api.component.NumberComponent.number;
 import static com.xpdustry.distributor.api.component.TextComponent.space;
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 
-public final class TowerRenderer implements PluginListener {
+final class TowerRenderer implements PluginListener {
 
     private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("#.##");
     private static final IntMap<String> ITEM_ICONS = new IntMap<>();

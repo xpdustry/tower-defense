@@ -61,10 +61,15 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
             throw new RuntimeException("Failed to load TD", e);
         }
         this.addListener(new TowerLogic(this));
+        final var pathfinder = new TowerPathfinder();
+        Vars.pathfinder = pathfinder;
+        this.addListener(pathfinder);
+        this.addListener(new TowerRenderer());
+        this.addListener(new TowerCommands(this));
     }
 
     @Override
-    public void addListener(final PluginListener listener) {
+    protected void addListener(final PluginListener listener) {
         super.addListener(listener);
         processor.process(listener);
     }

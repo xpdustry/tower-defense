@@ -43,6 +43,7 @@ dependencies {
     compileOnly(toxopid.dependencies.arcCore)
     compileOnly(toxopid.dependencies.mindustryCore)
     compileOnly(libs.distributor.api)
+    implementation(libs.distributor.command.lamp)
     compileOnlyApi(libs.jspecify)
     annotationProcessor(libs.nullaway)
     errorprone(libs.errorprone.core)
@@ -106,10 +107,16 @@ val generateMetadataFile by tasks.registering {
 }
 
 tasks.shadowJar {
+    fun relocate(pkg: String) = relocate(pkg, "com.xpdustry.tower.shadow.${pkg.split('.').last()}")
     archiveFileName = "${metadata.name}.jar"
     archiveClassifier = "plugin"
     from(generateMetadataFile)
     from(rootProject.file("LICENSE.md")) { into("META-INF") }
+    relocate("com.xpdustry.distributor.api.command.lamp")
+    relocate("revxrsal.commands")
+    relocate("org.spongepowered.configurate")
+    relocate("org.yaml.snakeyaml")
+    relocate("io.leangen.geantyref")
     minimize()
 }
 

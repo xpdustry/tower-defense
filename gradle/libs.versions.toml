@@ -19,6 +19,7 @@ jspecify = "1.0.0"
 [libraries]
 # utilities
 distributor-api = { module = "com.xpdustry:distributor-common-api", version.ref = "distributor" }
+distributor-command-lamp = { module = "com.xpdustry:distributor-command-lamp", version.ref = "distributor" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 
 # static analysis
