@@ -1,5 +1,5 @@
 /*
- * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
+ * This file is part of TowerDefense. An implementation of the tower defense gamemode by Xpdustry.
  *
  * MIT License
  *
@@ -23,42 +23,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.momo.tower;
+package com.xpdustry.tower;
 
-import java.util.List;
-import mindustry.type.Item;
-import mindustry.type.ItemSeq;
+import mindustry.ai.types.GroundAI;
+import mindustry.entities.Units;
+import mindustry.gen.Teamc;
+import mindustry.world.blocks.storage.CoreBlock;
+import org.jspecify.annotations.Nullable;
 
-public sealed interface TowerDrop {
+final class GroundTowerAI extends GroundAI {
 
-    void apply(final ItemSeq items);
-
-    record Simple(Item item, int amount) implements TowerDrop {
-
-        public Simple {
-            if (amount < 1) throw new IllegalArgumentException("amount is lower than one: " + amount);
-        }
-
-        @Override
-        public void apply(final ItemSeq items) {
-            items.add(item, amount);
-        }
-    }
-
-    record Random(List<TowerDrop> drops) implements TowerDrop {
-
-        private static final java.util.Random RANDOM = new java.util.Random();
-
-        public Random(final List<TowerDrop> drops) {
-            if (drops.isEmpty()) {
-                throw new IllegalArgumentException("The drop list is empty");
-            }
-            this.drops = List.copyOf(drops);
-        }
-
-        @Override
-        public void apply(final ItemSeq items) {
-            this.drops.get(RANDOM.nextInt(this.drops.size())).apply(items);
-        }
+    @Override
+    public @Nullable Teamc target(
+            final float x, final float y, final float range, final boolean air, final boolean ground) {
+        return Units.closestTarget(
+                this.unit.team(), x, y, range, $ -> false, build -> build.block() instanceof CoreBlock && ground);
     }
 }

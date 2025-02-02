@@ -1,5 +1,5 @@
 /*
- * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
+ * This file is part of TowerDefense. An implementation of the tower defense gamemode by Xpdustry.
  *
  * MIT License
  *
@@ -23,8 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.momo.tower;
+package com.xpdustry.tower;
 
-public sealed interface TowerEnemyPowerUpEvent {
-    record Health(float before, float after) implements TowerEnemyPowerUpEvent {}
-}
+import mindustry.type.ItemSeq;
+
+public record TowerDropEvent(float x, float y, ItemSeq items) {}

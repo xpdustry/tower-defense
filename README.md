@@ -1,6 +1,6 @@
-# momo
+# tower-defense
 
-[![Build status](https://github.com/xpdustry/momo/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/xpdustry/momo/actions/workflows/build.yml)
+[![Build status](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml)
 [![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Installation

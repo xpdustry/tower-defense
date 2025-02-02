@@ -1,5 +1,5 @@
 /*
- * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
+ * This file is part of TowerDefense. An implementation of the tower defense gamemode by Xpdustry.
  *
  * MIT License
  *
@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.momo.tower;
+package com.xpdustry.tower;
 
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
@@ -31,8 +31,6 @@ import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
-import com.xpdustry.momo.MoGameMode;
-import com.xpdustry.momo.MoMoPlugin;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
@@ -44,9 +42,9 @@ import mindustry.world.blocks.storage.CoreBlock;
 
 public final class TowerLogic implements PluginListener {
 
-    private final MoMoPlugin plugin;
+    private final TowerPlugin plugin;
 
-    public TowerLogic(final MoMoPlugin plugin) {
+    public TowerLogic(final TowerPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -60,7 +58,6 @@ public final class TowerLogic implements PluginListener {
 
     @PlayerActionHandler
     boolean onCoreBuildInteract(final Administration.PlayerAction action) {
-        if (!this.plugin.isActive(MoGameMode.TOWER_DEFENSE)) return true;
         switch (action.type) {
             case depositItem, withdrawItem -> {
                 return !(action.tile.block() instanceof CoreBlock);
@@ -79,7 +76,7 @@ public final class TowerLogic implements PluginListener {
 
     @EventHandler
     void onUnitSpawn(final EventType.UnitSpawnEvent event) {
-        if (this.plugin.isActive(MoGameMode.TOWER_DEFENSE) && event.unit.team() == Vars.state.rules.waveTeam) {
+        if (event.unit.team() == Vars.state.rules.waveTeam) {
             event.unit.controller(new GroundTowerAI());
         }
     }
@@ -88,7 +85,7 @@ public final class TowerLogic implements PluginListener {
     void onUnitDeath(final EventType.UnitDestroyEvent event) {
         if (event.unit.team() != Vars.state.rules.waveTeam) return;
         final var items = new ItemSeq();
-        final var data = this.plugin.getMoConfig().tower().units().get(event.unit.type());
+        final var data = this.plugin.config().units().get(event.unit.type());
         if (data == null) return;
         for (final var drop : data.drops()) drop.apply(items);
         Vars.state.rules.defaultTeam.core().items().add(items);
@@ -99,7 +96,7 @@ public final class TowerLogic implements PluginListener {
     void onHealthMultiply() {
         if (!Vars.state.isPlaying()) return;
         final var previous = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
-        final var after = previous * this.plugin.getMoConfig().tower().healthMultiplier();
+        final var after = previous * this.plugin.config().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier *= after;
         Call.setRules(Vars.state.rules);
         Distributor.get().getEventBus().post(new TowerEnemyPowerUpEvent.Health(previous, after));

@@ -1,5 +1,5 @@
 /*
- * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
+ * This file is part of TowerDefense. An implementation of the tower defense gamemode by Xpdustry.
  *
  * MIT License
  *
@@ -23,20 +23,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.momo.tower;
+package com.xpdustry.tower;
 
-import mindustry.ai.types.GroundAI;
-import mindustry.entities.Units;
-import mindustry.gen.Teamc;
-import mindustry.world.blocks.storage.CoreBlock;
-import org.jspecify.annotations.Nullable;
+import java.util.List;
+import java.util.Map;
+import mindustry.type.UnitType;
 
-final class GroundTowerAI extends GroundAI {
-
-    @Override
-    public @Nullable Teamc target(
-            final float x, final float y, final float range, final boolean air, final boolean ground) {
-        return Units.closestTarget(
-                this.unit.team(), x, y, range, $ -> false, build -> build.block() instanceof CoreBlock && ground);
+public record TowerConfig(float healthMultiplier, Map<String, List<TowerDrop>> drops, Map<UnitType, UnitData> units) {
+    public TowerConfig {
+        if (healthMultiplier < 1F) {
+            throw new IllegalArgumentException("health-multiplier can't be lower than 1");
+        }
     }
+
+    public record UnitData(List<TowerDrop> drops) {}
 }

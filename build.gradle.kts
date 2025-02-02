@@ -124,7 +124,7 @@ tasks.withType<JavaCompile> {
         disableWarningsInGeneratedCode = true
         disable("MissingSummary", "InlineMeSuggester")
         check("NullAway", if (name.contains("test", ignoreCase = true)) CheckSeverity.OFF else CheckSeverity.ERROR)
-        option("NullAway:AnnotatedPackages", "com.xpdustry.momo")
+        option("NullAway:AnnotatedPackages", "com.xpdustry.tower")
     }
 }
 

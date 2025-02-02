@@ -1,5 +1,5 @@
 /*
- * This file is part of MOMO. A plugin providing more gamemodes for Mindustry servers.
+ * This file is part of TowerDefense. An implementation of the tower defense gamemode by Xpdustry.
  *
  * MIT License
  *
@@ -23,14 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.momo;
+package com.xpdustry.tower;
 
 import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
-import com.xpdustry.momo.tower.TowerConfig;
-import com.xpdustry.momo.tower.TowerDrop;
-import com.xpdustry.momo.tower.TowerLogic;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -46,7 +43,7 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 @SuppressWarnings("unused")
-public final class MoMoPlugin extends AbstractMindustryPlugin implements MoMoAPI {
+public final class TowerPlugin extends AbstractMindustryPlugin {
 
     private final PluginAnnotationProcessor<List<Object>> processor = PluginAnnotationProcessor.compose(
             PluginAnnotationProcessor.events(this),
@@ -54,14 +51,14 @@ public final class MoMoPlugin extends AbstractMindustryPlugin implements MoMoAPI
             PluginAnnotationProcessor.triggers(this),
             PluginAnnotationProcessor.playerActions(this));
 
-    private @Nullable MoMoConfig config;
+    private @Nullable TowerConfig config;
 
     @Override
     public void onInit() {
         try {
             this.config = load();
         } catch (final Exception e) {
-            throw new RuntimeException("Failed to load MoMo", e);
+            throw new RuntimeException("Failed to load TD", e);
         }
         this.addListener(new TowerLogic(this));
     }
@@ -72,63 +69,39 @@ public final class MoMoPlugin extends AbstractMindustryPlugin implements MoMoAPI
         processor.process(listener);
     }
 
-    @Override
-    public boolean isActive(final MoGameMode mode) {
-        return getMoConfig().mode() == mode;
-    }
-
-    public MoMoConfig getMoConfig() {
+    TowerConfig config() {
         return Objects.requireNonNull(config);
     }
 
-    private MoMoConfig load() throws IOException {
+    private TowerConfig load() throws IOException {
         final var file = this.getDirectory().resolve("config.yaml");
         if (Files.notExists(file)) {
             try (final var stream = Objects.requireNonNull(
-                    this.getClass().getClassLoader().getResourceAsStream("com/xpdustry/momo/config.yaml"))) {
+                    this.getClass().getClassLoader().getResourceAsStream("com/xpdustry/tower/config.yaml"))) {
                 Files.copy(stream, file);
             }
         }
-        final var node = YamlConfigurationLoader.builder().path(file).build().load();
+        final var root = YamlConfigurationLoader.builder().path(file).build().load();
+        final var drops = root.node("drops").childrenMap().entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
+                                .map(this::parseDrop)
+                                .toList()));
+        final var units = root.node("units").childrenMap().entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        entry -> {
+                            final var name = entry.getKey().toString();
+                            return Objects.requireNonNull(
+                                    Vars.content.<UnitType>getByName(ContentType.unit, name), "Unknown unit " + name);
+                        },
+                        entry -> parseUnit(drops, entry.getValue())));
 
-        final TowerConfig tower;
-        {
-            final var root = node.node("tower-defense");
-            final var drops = root.node("drops").childrenMap().entrySet().stream()
-                    .collect(Collectors.toUnmodifiableMap(
-                            entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
-                                    .map(this::parseDrop)
-                                    .toList()));
-            final var units = root.node("units").childrenMap().entrySet().stream()
-                    .collect(Collectors.toUnmodifiableMap(
-                            entry -> {
-                                final var name = entry.getKey().toString();
-                                return Objects.requireNonNull(
-                                        Vars.content.<UnitType>getByName(ContentType.unit, name),
-                                        "Unknown unit " + name);
-                            },
-                            entry -> parseUnit(drops, entry.getValue())));
-
-            final var multiplierNode = root.node("health-multiplier");
-            if (multiplierNode.virtual()) {
-                throw new RuntimeException("health-multiplier field missing");
-            }
-
-            tower = new TowerConfig(multiplierNode.getFloat(), drops, units);
+        final var multiplierNode = root.node("health-multiplier");
+        if (multiplierNode.virtual()) {
+            throw new RuntimeException("health-multiplier field missing");
         }
 
-        MoGameMode mode = null;
-        {
-            final var root = node.node("game-mode");
-            if (!root.virtual()) {
-                final var name = Objects.requireNonNull(root.getString());
-                mode = switch (name) {
-                    case "tower-defense" -> MoGameMode.TOWER_DEFENSE;
-                    default -> throw new IllegalArgumentException("Unknown gamemode " + name);};
-            }
-        }
-
-        return new MoMoConfig(mode, tower);
+        return new TowerConfig(multiplierNode.getFloat(), drops, units);
     }
 
     private TowerDrop parseDrop(final ConfigurationNode node) {
