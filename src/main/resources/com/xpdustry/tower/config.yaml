@@ -1,5 +1,7 @@
 health-multiplier: 1.03
 
+mitosis: true
+
 drops:
   tier1_drop:
     - item: "copper"
@@ -106,62 +108,82 @@ drops:
           amount: 120
 
 units:
-  # Tier 1
+  # Dagger Tree
   dagger:
     drop: "tier1_drop"
-  crawler:
-    drop: "tier1_drop"
-  nova:
-    drop: "tier1_drop"
-  mono:
-    drop: "tier1_drop"
-  flare:
-    drop: "tier1_drop"
-
-  # Tier 2
   mace:
     drop: "tier2_drop"
-  atrax:
-    drop: "tier2_drop"
-  pulsar:
-    drop: "tier2_drop"
-  poly:
-    drop: "tier2_drop"
-  horizon:
-    drop: "tier2_drop"
-
-  # Tier 3
+    downgrade: "dagger"
   fortress:
     drop: "tier3_drop"
-  spiroct:
-    drop: "tier3_drop"
-  quasar:
-    drop: "tier3_drop"
-  mega:
-    drop: "tier3_drop"
-  zenith:
-    drop: "tier3_drop"
-
-  # Tier 4
+    downgrade: "mace"
   scepter:
     drop: "tier4_drop"
-  arkyid:
-    drop: "tier4_drop"
-  vela:
-    drop: "tier4_drop"
-  quad:
-    drop: "tier4_drop"
-  antumbra:
-    drop: "tier4_drop"
-
-  # Tier 5
+    downgrade: "fortress"
   reign:
     drop: "tier5_drop"
+    downgrade: "scepter"
+
+  # Crawler Tree
+  crawler:
+    drop: "tier1_drop"
+  atrax:
+    drop: "tier2_drop"
+    downgrade: "crawler"
+  spiroct:
+    drop: "tier3_drop"
+    downgrade: "atrax"
+  arkyid:
+    drop: "tier4_drop"
+    downgrade: "spiroct"
   toxopid:
     drop: "tier5_drop"
+    downgrade: "arkyid"
+
+  # Nova Tree
+  nova:
+    drop: "tier1_drop"
+  pulsar:
+    drop: "tier2_drop"
+    downgrade: "nova"
+  quasar:
+    drop: "tier3_drop"
+    downgrade: "pulsar"
+  vela:
+    drop: "tier4_drop"
+    downgrade: "quasar"
   corvus:
     drop: "tier5_drop"
+    downgrade: "vela"
+
+  # Mono Tree
+  mono:
+    drop: "tier1_drop"
+  poly:
+    drop: "tier2_drop"
+    downgrade: "mono"
+  mega:
+    drop: "tier3_drop"
+    downgrade: "poly"
+  quad:
+    drop: "tier4_drop"
+    downgrade: "mega"
   oct:
     drop: "tier5_drop"
+    downgrade: "quad"
+
+  # Flare Tree
+  flare:
+    drop: "tier1_drop"
+  horizon:
+    drop: "tier2_drop"
+    downgrade: "flare"
+  zenith:
+    drop: "tier3_drop"
+    downgrade: "horizon"
+  antumbra:
+    drop: "tier4_drop"
+    downgrade: "zenith"
   eclipse:
     drop: "tier5_drop"
+    downgrade: "antumbra"
