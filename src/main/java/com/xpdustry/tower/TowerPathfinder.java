@@ -41,10 +41,18 @@ import mindustry.world.Tile;
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
+    static final int COST_AIR;
 
     static {
         wrapPathCost(Pathfinder.costGround);
         wrapPathCost(Pathfinder.costLegs);
+
+        costTypes.add((team, tile) -> {
+            final var ground = Objects.requireNonNull(costTypes.get(Pathfinder.costGround));
+            final var cost = ground.getCost(team, tile);
+            return cost <= -1 ? 6000 : cost;
+        });
+        COST_AIR = costTypes.size - 1;
     }
 
     private static void wrapPathCost(final int pathCostType) {

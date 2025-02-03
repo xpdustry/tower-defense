@@ -71,7 +71,7 @@ final class TowerLogic implements PluginListener {
     @EventHandler
     void onUnitSpawn(final EventType.UnitSpawnEvent event) {
         if (event.unit.team() == Vars.state.rules.waveTeam) {
-            event.unit.controller(new GroundTowerAI());
+            event.unit.controller(new TowerAI());
         }
     }
 
@@ -89,7 +89,7 @@ final class TowerLogic implements PluginListener {
             unit.set(event.unit.x(), event.unit.y());
             unit.rotation(event.unit.rotation());
             unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
-            unit.controller(new GroundTowerAI());
+            unit.controller(new TowerAI());
             unit.add();
             Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
         }

@@ -25,18 +25,31 @@
  */
 package com.xpdustry.tower;
 
+import mindustry.Vars;
+import mindustry.ai.Pathfinder;
 import mindustry.ai.types.GroundAI;
 import mindustry.entities.Units;
 import mindustry.gen.Teamc;
 import mindustry.world.blocks.storage.CoreBlock;
 import org.jspecify.annotations.Nullable;
 
-final class GroundTowerAI extends GroundAI {
+final class TowerAI extends GroundAI {
 
     @Override
     public @Nullable Teamc target(
             final float x, final float y, final float range, final boolean air, final boolean ground) {
         return Units.closestTarget(
-                this.unit.team(), x, y, range, $ -> false, build -> build.block() instanceof CoreBlock && ground);
+                this.unit().team(), x, y, range, $ -> false, build -> build.block() instanceof CoreBlock && ground);
+    }
+
+    @Override
+    public void pathfind(final int pathTarget) {
+        int costType = unit().isFlying() ? TowerPathfinder.COST_AIR : unit().pathType();
+        final var tile = unit().tileOn();
+        if (tile == null) return;
+        final var targetTile =
+                Vars.pathfinder.getTargetTile(tile, Vars.pathfinder.getField(unit().team, costType, pathTarget));
+        if (tile == targetTile || (costType == Pathfinder.costNaval && !targetTile.floor().isLiquid)) return;
+        unit().movePref(vec.trns(unit().angleTo(targetTile.worldx(), targetTile.worldy()), unit().speed()));
     }
 }
