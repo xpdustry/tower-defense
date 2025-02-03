@@ -86,12 +86,15 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
                 Files.copy(stream, file);
             }
         }
+
         final var root = YamlConfigurationLoader.builder().path(file).build().load();
+
         final var drops = root.node("drops").childrenMap().entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(
                         entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
                                 .map(this::parseDrop)
                                 .toList()));
+
         final var units = root.node("units").childrenMap().entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(
                         entry -> {
@@ -101,12 +104,11 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
                         },
                         entry -> parseUnit(drops, entry.getValue())));
 
-        final var multiplierNode = root.node("health-multiplier");
-        if (multiplierNode.virtual()) {
-            throw new RuntimeException("health-multiplier field missing");
-        }
-
-        return new TowerConfig(multiplierNode.getFloat(), drops, units);
+        return new TowerConfig(
+                root.node("health-multiplier").getFloat(1.03F),
+                root.node("mitosis").getBoolean(true),
+                drops,
+                units);
     }
 
     private TowerDrop parseDrop(final ConfigurationNode node) {
@@ -134,6 +136,12 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         final var dropName =
                 Objects.requireNonNull(node.node("drop").getString(), "drop field missing for " + node.path());
         final var drop = Objects.requireNonNull(drops.get(dropName), "Unknown drop bundle " + dropName);
-        return new TowerConfig.UnitData(drop);
+        final var downgradeName = node.node("downgrade").getString();
+        final var downgrade = downgradeName == null
+                ? null
+                : Objects.requireNonNull(
+                        Vars.content.<UnitType>getByName(ContentType.unit, downgradeName),
+                        "Unknown unit " + downgradeName);
+        return new TowerConfig.UnitData(drop, downgrade);
     }
 }

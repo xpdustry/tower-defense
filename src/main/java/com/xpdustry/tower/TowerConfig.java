@@ -28,13 +28,15 @@ package com.xpdustry.tower;
 import java.util.List;
 import java.util.Map;
 import mindustry.type.UnitType;
+import org.jspecify.annotations.Nullable;
 
-public record TowerConfig(float healthMultiplier, Map<String, List<TowerDrop>> drops, Map<UnitType, UnitData> units) {
+record TowerConfig(
+        float healthMultiplier, boolean mitosis, Map<String, List<TowerDrop>> drops, Map<UnitType, UnitData> units) {
     public TowerConfig {
         if (healthMultiplier < 1F) {
             throw new IllegalArgumentException("health-multiplier can't be lower than 1");
         }
     }
 
-    public record UnitData(List<TowerDrop> drops) {}
+    public record UnitData(List<TowerDrop> drops, @Nullable UnitType downgrade) {}
 }

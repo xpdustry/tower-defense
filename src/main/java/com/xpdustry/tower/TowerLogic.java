@@ -32,6 +32,8 @@ import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import mindustry.Vars;
+import mindustry.content.Fx;
+import mindustry.content.StatusEffects;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.net.Administration;
@@ -82,6 +84,15 @@ final class TowerLogic implements PluginListener {
         for (final var drop : data.drops()) drop.apply(items);
         Vars.state.rules.defaultTeam.core().items().add(items);
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
+        if (this.plugin.config().mitosis() && data.downgrade() != null) {
+            final var unit = data.downgrade().create(Vars.state.rules.waveTeam);
+            unit.set(event.unit.x(), event.unit.y());
+            unit.rotation(event.unit.rotation());
+            unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
+            unit.controller(new GroundTowerAI());
+            unit.add();
+            Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
+        }
     }
 
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)

@@ -9,5 +9,5 @@
   "minGameVersion": "146",
   "java": true,
   "hidden": true,
-  "dependencies": ["distributor-common"]
+  "dependencies": ["distributor-common", "slf4md"]
 }
