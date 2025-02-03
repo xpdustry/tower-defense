@@ -43,6 +43,7 @@ import mindustry.gen.Call;
 import mindustry.gen.Iconc;
 import mindustry.gen.WorldLabel;
 import mindustry.type.ItemSeq;
+import org.slf4j.LoggerFactory;
 
 import static com.xpdustry.distributor.api.component.ListComponent.components;
 import static com.xpdustry.distributor.api.component.NumberComponent.number;
@@ -59,7 +60,8 @@ final class TowerRenderer implements PluginListener {
             try {
                 final var field = Iconc.class.getDeclaredField(Strings.kebabToCamel("item-" + item.name));
                 ITEM_ICONS.put(item.id, Character.toString((char) field.get(null)));
-            } catch (final ReflectiveOperationException ignored) {
+            } catch (final ReflectiveOperationException e) {
+                LoggerFactory.getLogger(TowerRenderer.class).debug("Failed to find icon for {}", item.name);
             }
         }
     }
@@ -67,9 +69,9 @@ final class TowerRenderer implements PluginListener {
     private final List<LabelWrapper> wrappers = new LinkedList<>();
 
     @EventHandler
-    void onEnemyPowerIncreaseEvent(final TowerEnemyPowerUpEvent.Health event) {
-        if ((int) event.after() > (int) event.before()) {
-            Call.sendMessage("Health multiplier has increased to " + MULTIPLIER_FORMAT.format(event.after()));
+    void onEnemyPowerIncreaseEvent(final PowerIncreaseEvent.Health event) {
+        if ((int) event.next() > (int) event.prev()) {
+            Call.sendMessage("Health multiplier has increased to " + MULTIPLIER_FORMAT.format(event.next()));
         }
     }
 
@@ -79,7 +81,7 @@ final class TowerRenderer implements PluginListener {
     }
 
     @EventHandler
-    void onTowerDrop(final TowerDropEvent event) {
+    void onTowerDrop(final EnemyDropEvent event) {
         final LinkedList<LabelWrapper> closest = new LinkedList<>();
         for (final var wrapper : wrappers) {
             if (wrapper.label.dst(event.x(), event.y()) <= 3 * Vars.tilesize && wrapper.items.total <= 3000) {
@@ -124,7 +126,7 @@ final class TowerRenderer implements PluginListener {
             return (System.currentTimeMillis() - lastUpdate) / 1000L;
         }
 
-        void update(final TowerDropEvent event) {
+        void update(final EnemyDropEvent event) {
             label.set(event.x(), event.y());
             items.add(event.items());
             label.text(ComponentStringBuilder.mindustry(KeyContainer.empty())

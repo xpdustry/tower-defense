@@ -25,6 +25,6 @@
  */
 package com.xpdustry.tower;
 
-public sealed interface TowerEnemyPowerUpEvent {
-    record Health(float before, float after) implements TowerEnemyPowerUpEvent {}
-}
+import mindustry.type.ItemSeq;
+
+public record EnemyDropEvent(float x, float y, ItemSeq items) {}

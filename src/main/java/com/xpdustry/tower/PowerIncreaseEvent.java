@@ -25,6 +25,11 @@
  */
 package com.xpdustry.tower;
 
-import mindustry.type.ItemSeq;
+import mindustry.game.Team;
 
-public record TowerDropEvent(float x, float y, ItemSeq items) {}
+public sealed interface PowerIncreaseEvent {
+
+    Team team();
+
+    record Health(Team team, float prev, float next) implements PowerIncreaseEvent {}
+}

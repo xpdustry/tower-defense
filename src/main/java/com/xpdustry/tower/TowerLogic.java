@@ -81,17 +81,17 @@ final class TowerLogic implements PluginListener {
         if (data == null) return;
         for (final var drop : data.drops()) drop.apply(items);
         Vars.state.rules.defaultTeam.core().items().add(items);
-        Distributor.get().getEventBus().post(new TowerDropEvent(event.unit.x(), event.unit.y(), items));
+        Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
     }
 
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
-    void onHealthMultiply() {
+    void onEnemyHealthMultiply() {
         if (!Vars.state.isPlaying()) return;
-        final var previous = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
-        final var after = previous * this.plugin.config().healthMultiplier();
-        Vars.state.rules.waveTeam.rules().unitHealthMultiplier *= after;
+        final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
+        final var next = prev * this.plugin.config().healthMultiplier();
+        Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
         Call.setRules(Vars.state.rules);
-        Distributor.get().getEventBus().post(new TowerEnemyPowerUpEvent.Health(previous, after));
+        Distributor.get().getEventBus().post(new PowerIncreaseEvent.Health(Vars.state.rules.waveTeam, prev, next));
     }
 
     private boolean hasNoNearbyCore(final Block block, final Tile tile) {
