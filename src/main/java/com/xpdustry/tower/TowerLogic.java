@@ -78,12 +78,18 @@ final class TowerLogic implements PluginListener {
     @EventHandler
     void onUnitDeath(final EventType.UnitDestroyEvent event) {
         if (event.unit.team() != Vars.state.rules.waveTeam) return;
+
         final var items = new ItemSeq();
         final var data = this.plugin.config().units().get(event.unit.type());
         if (data == null) return;
+
         for (final var drop : data.drops()) drop.apply(items);
-        Vars.state.rules.defaultTeam.core().items().add(items);
+
+        final var core = Vars.state.rules.defaultTeam.core();
+        if (core != null) core.items().add(items);
+
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
+
         if (this.plugin.config().mitosis() && data.downgrade() != null) {
             final var unit = data.downgrade().create(Vars.state.rules.waveTeam);
             unit.set(event.unit.x(), event.unit.y());
