@@ -41,6 +41,7 @@ import mindustry.type.ItemSeq;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.blocks.storage.StorageBlock;
 
 final class TowerLogic implements PluginListener {
 
@@ -52,20 +53,13 @@ final class TowerLogic implements PluginListener {
 
     @PlayerActionHandler
     boolean onCoreBuildInteract(final Administration.PlayerAction action) {
-        switch (action.type) {
-            case depositItem, withdrawItem -> {
-                return !(action.tile.block() instanceof CoreBlock);
-            }
-            case placeBlock -> {
-                return hasNoNearbyCore(action.block, action.tile);
-            }
-            case dropPayload -> {
-                return !(action.payload.content() instanceof Block block) || hasNoNearbyCore(block, action.tile);
-            }
-            default -> {
-                return true;
-            }
-        }
+        return switch (action.type) {
+            case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
+            case placeBlock -> hasNoNearbyCore(action.block, action.tile);
+            case dropPayload -> !(action.payload.content() instanceof Block block)
+                    || hasNoNearbyCore(block, action.tile);
+            default -> true;
+        };
     }
 
     @EventHandler
@@ -117,11 +111,16 @@ final class TowerLogic implements PluginListener {
         for (int i = rx - 1; i <= rx + block.size; i++) {
             for (int j = ry - 1; j <= ry + block.size; j++) {
                 final var at = Vars.world.tile(i, j);
-                if (at != null && at.block() instanceof CoreBlock) {
+                if (at != null && hasCoreBlock(at)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private boolean hasCoreBlock(final Tile tile) {
+        return (tile.block() instanceof CoreBlock
+                || (tile.build instanceof StorageBlock.StorageBuild build && build.linkedCore != null));
     }
 }
