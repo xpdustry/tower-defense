@@ -107,6 +107,7 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         return new TowerConfig(
                 root.node("health-multiplier").getFloat(1.03F),
                 root.node("mitosis").getBoolean(true),
+                root.node("unit-bind").getBoolean(false),
                 drops,
                 units);
     }

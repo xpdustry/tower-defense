@@ -25,30 +25,54 @@
  */
 package com.xpdustry.tower;
 
+import arc.graphics.Color;
+import arc.struct.IntMap;
+import arc.util.Interval;
+import arc.util.Time;
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.annotation.TaskHandler;
+import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.InflaterInputStream;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
+import mindustry.logic.LAssembler;
+import mindustry.logic.LExecutor;
 import mindustry.net.Administration;
 import mindustry.type.ItemSeq;
 import mindustry.world.Block;
 import mindustry.world.Tile;
+import mindustry.world.blocks.logic.LogicBlock;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.blocks.storage.StorageBlock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 final class TowerLogic implements PluginListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(TowerLogic.class);
     private final TowerPlugin plugin;
+    private final IntMap<Interval> messageRateLimits = new IntMap<>();
 
     public TowerLogic(final TowerPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    void onPlayerQuit(final EventType.PlayerLeave event) {
+        messageRateLimits.remove(event.player.id());
     }
 
     @PlayerActionHandler
@@ -60,6 +84,67 @@ final class TowerLogic implements PluginListener {
                     || hasNoNearbyCore(block, action.tile);
             default -> true;
         };
+    }
+
+    @PlayerActionHandler
+    boolean onLogicUBindAttempt(final Administration.PlayerAction action) {
+        final Block block;
+        switch (action.type) {
+            case placeBlock -> block = action.block;
+            case configure -> block = action.tile.block();
+            default -> {
+                return true;
+            }
+        }
+
+        if (!(block instanceof LogicBlock && action.config instanceof byte[] data)
+                || plugin.config().ubind()
+                || block.privileged) {
+            return true;
+        }
+
+        try (final var stream = new DataInputStream(new InflaterInputStream(new ByteArrayInputStream(data)))) {
+            final var version = stream.read();
+            if (version == 0) {
+                throw new IOException("Unsupported version");
+            }
+
+            final var length = stream.readInt();
+            if (length > 1024 * 100) {
+                throw new IOException("Data length too big");
+            }
+
+            final var bytes = new byte[length];
+            stream.readFully(bytes);
+
+            final var total = stream.readInt();
+            for (var i = 0; i < total; i++) {
+                stream.readUTF(); // link name
+                stream.readShort(); // x
+                stream.readShort(); // y
+            }
+
+            final var code = new String(bytes, StandardCharsets.UTF_8);
+            final var assembler = LAssembler.assemble(code, block.privileged);
+
+            for (final var instruction : assembler.instructions) {
+                if (instruction instanceof LExecutor.UnitBindI) {
+                    if (messageRateLimits.get(action.player.id(), Interval::new).get(Time.toSeconds)) {
+                        Distributor.get()
+                                .getAudienceProvider()
+                                .getPlayer(action.player)
+                                .sendWarning(text(
+                                        "You can't use ubind in this gamemode.", ComponentColor.from(Color.scarlet)));
+                    }
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (final IOException e) {
+            logger.debug("Failed to parse logic code", e);
+            return true;
+        }
     }
 
     @EventHandler

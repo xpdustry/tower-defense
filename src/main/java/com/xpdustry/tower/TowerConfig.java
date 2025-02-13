@@ -31,7 +31,11 @@ import mindustry.type.UnitType;
 import org.jspecify.annotations.Nullable;
 
 record TowerConfig(
-        float healthMultiplier, boolean mitosis, Map<String, List<TowerDrop>> drops, Map<UnitType, UnitData> units) {
+        float healthMultiplier,
+        boolean mitosis,
+        boolean ubind,
+        Map<String, List<TowerDrop>> drops,
+        Map<UnitType, UnitData> units) {
     public TowerConfig {
         if (healthMultiplier < 1F) {
             throw new IllegalArgumentException("health-multiplier can't be lower than 1");

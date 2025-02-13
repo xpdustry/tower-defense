@@ -2,6 +2,8 @@ health-multiplier: 1.03
 
 mitosis: true
 
+unit-bind: false
+
 drops:
   tier1_drop:
     - item: "copper"
