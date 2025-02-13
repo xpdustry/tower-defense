@@ -27,6 +27,7 @@ package com.xpdustry.tower;
 
 import arc.struct.IntMap;
 import arc.util.Strings;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.component.render.ComponentStringBuilder;
@@ -34,7 +35,6 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
-import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 import mindustry.Vars;
@@ -52,7 +52,6 @@ import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 final class TowerRenderer implements PluginListener {
 
-    private static final DecimalFormat MULTIPLIER_FORMAT = new DecimalFormat("#.##");
     private static final IntMap<String> ITEM_ICONS = new IntMap<>();
 
     static {
@@ -70,8 +69,16 @@ final class TowerRenderer implements PluginListener {
 
     @EventHandler
     void onEnemyPowerIncreaseEvent(final PowerIncreaseEvent.Health event) {
-        if ((int) event.next() > (int) event.prev()) {
-            Call.sendMessage("Health multiplier has increased to " + MULTIPLIER_FORMAT.format(event.next()));
+        if (((int) event.next() > (int) event.prev()) && event.team().equals(Vars.state.rules.waveTeam)) {
+            Distributor.get()
+                    .getAudienceProvider()
+                    .getTeam(Vars.state.rules.defaultTeam)
+                    .sendMessage(components(
+                            ComponentColor.from(Vars.state.rules.waveTeam.color),
+                            text(">>>", ComponentColor.CYAN),
+                            space(),
+                            text("Enemy Health Multiplier has increased to x"),
+                            number((int) event.next())));
         }
     }
 
