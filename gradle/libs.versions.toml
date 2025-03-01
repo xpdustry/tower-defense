@@ -9,7 +9,7 @@ errorprone-gradle = "4.1.0"
 # utilities
 slf4md = "1.0.1"
 distributor = "4.2.0-SNAPSHOT"
-configurate = "4.1.2"
+configurate = "4.2.0"
 
 # static analysis
 errorprone-core = "2.36.0"
