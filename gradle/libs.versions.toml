@@ -13,7 +13,7 @@ configurate = "4.1.2"
 
 # static analysis
 errorprone-core = "2.36.0"
-nullaway = "0.12.3"
+nullaway = "0.12.7"
 jspecify = "1.0.0"
 
 [libraries]
