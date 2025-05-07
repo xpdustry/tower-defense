@@ -27,11 +27,9 @@ package com.xpdustry.tower;
 
 import java.util.List;
 import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
-
 import mindustry.type.UnitType;
 import mindustry.world.Block;
+import org.jspecify.annotations.Nullable;
 
 record TowerConfig(
         float healthMultiplier,

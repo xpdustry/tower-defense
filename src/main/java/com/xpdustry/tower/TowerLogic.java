@@ -46,6 +46,8 @@ import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
+import mindustry.gen.Iconc;
+import mindustry.gen.Player;
 import mindustry.logic.LAssembler;
 import mindustry.logic.LExecutor;
 import mindustry.net.Administration;
@@ -79,9 +81,9 @@ final class TowerLogic implements PluginListener {
     boolean onCoreBuildInteract(final Administration.PlayerAction action) {
         return switch (action.type) {
             case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
-            case placeBlock -> hasNoNearbyCore(action.block, action.tile);
+            case placeBlock -> hasNoNearbyCore(action.block, action.tile, action.player);
             case dropPayload -> !(action.payload.content() instanceof Block block)
-                    || hasNoNearbyCore(block, action.tile);
+                    || hasNoNearbyCore(block, action.tile, action.player);
             default -> true;
         };
     }
@@ -190,13 +192,14 @@ final class TowerLogic implements PluginListener {
         Distributor.get().getEventBus().post(new PowerIncreaseEvent.Health(Vars.state.rules.waveTeam, prev, next));
     }
 
-    private boolean hasNoNearbyCore(final Block block, final Tile tile) {
+    private boolean hasNoNearbyCore(final Block block, final Tile tile, final Player player) {
         final int rx = tile.x + block.sizeOffset;
         final int ry = tile.y + block.sizeOffset;
         for (int i = rx - 1; i <= rx + block.size; i++) {
             for (int j = ry - 1; j <= ry + block.size; j++) {
                 final var at = Vars.world.tile(i, j);
                 if (at != null && hasCoreBlock(at)) {
+                    Call.label(player.con, "[scarlet]" + Iconc.cancel, 1F, tile.x * 8f, tile.y * 8f);
                     return false;
                 }
             }

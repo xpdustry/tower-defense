@@ -25,12 +25,12 @@
  */
 package com.xpdustry.tower;
 
-import java.util.List;
 import arc.struct.IntSet;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.util.Priority;
+import java.util.List;
 import java.util.Objects;
 import mindustry.Vars;
 import mindustry.ai.Pathfinder;
@@ -39,13 +39,16 @@ import mindustry.game.EventType;
 import mindustry.net.Administration;
 import mindustry.world.Block;
 import mindustry.world.Tile;
+import mindustry.gen.Call;
+import mindustry.gen.Iconc;
+import org.jspecify.annotations.Nullable;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
     static final int COST_AIR;
 
-    private final List<Block> blocks;
+    private final @Nullable List<Block> blocks;
     
     TowerPathfinder(TowerPlugin plugin) {
         this.blocks = plugin.config().buildableOnPath();
@@ -105,6 +108,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
         final var iterator = covered.iterator();
         while (iterator.hasNext) {
             if (towerPassableFloors.contains(iterator.next())) {
+                Call.label(action.player.con, "[scarlet]" + Iconc.cancel, 1F, action.tile.x * 8f, action.tile.y * 8f);
                 return false;
             }
         }
