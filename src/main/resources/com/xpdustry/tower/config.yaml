@@ -4,6 +4,9 @@ mitosis: true
 
 unit-bind: false
 
+buildable-on-path:
+  - shock-mine
+
 drops:
   tier1_drop:
     - item: "copper"

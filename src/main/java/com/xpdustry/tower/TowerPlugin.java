@@ -38,6 +38,7 @@ import mindustry.Vars;
 import mindustry.ctype.ContentType;
 import mindustry.type.Item;
 import mindustry.type.UnitType;
+import mindustry.world.Block;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -61,7 +62,7 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
             throw new RuntimeException("Failed to load TD", e);
         }
         this.addListener(new TowerLogic(this));
-        final var pathfinder = new TowerPathfinder();
+        final var pathfinder = new TowerPathfinder(this);
         Vars.pathfinder = pathfinder;
         this.addListener(pathfinder);
         this.addListener(new TowerRenderer());
@@ -89,6 +90,13 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
 
         final var root = YamlConfigurationLoader.builder().path(file).build().load();
 
+        final var blocks = root.node("buildable-on-path").isNull() 
+            ? null : root.node("buildable-on-path").childrenList().stream()
+                .map(node -> Objects.requireNonNull(
+                        Vars.content.<Block>getByName(ContentType.block, node.getString()),
+                        "Unknown block " + node.getString()))
+                .toList();
+
         final var drops = root.node("drops").childrenMap().entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(
                         entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
@@ -108,6 +116,7 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
                 root.node("health-multiplier").getFloat(1.03F),
                 root.node("mitosis").getBoolean(true),
                 root.node("unit-bind").getBoolean(false),
+                blocks,
                 drops,
                 units);
     }

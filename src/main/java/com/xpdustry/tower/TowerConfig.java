@@ -27,13 +27,17 @@ package com.xpdustry.tower;
 
 import java.util.List;
 import java.util.Map;
-import mindustry.type.UnitType;
+
 import org.jspecify.annotations.Nullable;
+
+import mindustry.type.UnitType;
+import mindustry.world.Block;
 
 record TowerConfig(
         float healthMultiplier,
         boolean mitosis,
         boolean ubind,
+        @Nullable List<Block> buildableOnPath,
         Map<String, List<TowerDrop>> drops,
         Map<UnitType, UnitData> units) {
     public TowerConfig {

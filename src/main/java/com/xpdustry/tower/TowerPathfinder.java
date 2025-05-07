@@ -25,6 +25,7 @@
  */
 package com.xpdustry.tower;
 
+import java.util.List;
 import arc.struct.IntSet;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
@@ -36,12 +37,19 @@ import mindustry.ai.Pathfinder;
 import mindustry.content.Blocks;
 import mindustry.game.EventType;
 import mindustry.net.Administration;
+import mindustry.world.Block;
 import mindustry.world.Tile;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
     static final int COST_AIR;
+
+    private final List<Block> blocks;
+    
+    TowerPathfinder(TowerPlugin plugin) {
+        this.blocks = plugin.config().buildableOnPath();
+    }
 
     static {
         wrapPathCost(Pathfinder.costGround);
@@ -89,7 +97,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     @PlayerActionHandler
     boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
-        if (action.type != Administration.ActionType.placeBlock) {
+        if (action.type != Administration.ActionType.placeBlock || (blocks != null && blocks.contains(action.block))) {
             return true;
         }
         final var covered = new IntSet();
