@@ -98,10 +98,16 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
                 .toList();
 
         final var drops = root.node("drops").childrenMap().entrySet().stream()
-                .collect(Collectors.toUnmodifiableMap(
-                        entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
+            .collect(Collectors.toUnmodifiableMap(
+                entry -> entry.getKey().toString(), // Convert category keys to String
+                    categoryEntry -> categoryEntry.getValue().childrenMap().entrySet().stream()
+                        .collect(Collectors.toUnmodifiableMap(
+                            dropEntry -> dropEntry.getKey().toString(), // Convert tier keys to String
+                            dropEntry -> dropEntry.getValue().childrenList().stream()
                                 .map(this::parseDrop)
-                                .toList()));
+                                .toList()
+                        ))
+            ));
 
         final var units = root.node("units").childrenMap().entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(
@@ -142,16 +148,36 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         }
     }
 
-    private TowerConfig.UnitData parseUnit(final Map<String, List<TowerDrop>> drops, final ConfigurationNode node) {
-        final var dropName =
-                Objects.requireNonNull(node.node("drop").getString(), "drop field missing for " + node.path());
-        final var drop = Objects.requireNonNull(drops.get(dropName), "Unknown drop bundle " + dropName);
+    private TowerConfig.UnitData parseUnit(final Map<String, Map<String, List<TowerDrop>>> drops, final ConfigurationNode node) {
+        final var dropName = Objects.requireNonNull(node.node("drop").getString(), "drop field missing for " + node.path());
+        System.out.println("DEBUG dropName: " + dropName + " from node path: " + node.path());
+        
+        // Split the dropName into category and tier
+        final var dropParts = dropName.split("_", 2);
+        if (dropParts.length != 2) {
+            throw new RuntimeException("Invalid drop name format: " + dropName);
+        }
+        final var category = dropParts[0];
+        final var tier = dropParts[1];
+
+        // Retrieve the drop list
+        if (!drops.containsKey(category)) {
+            throw new RuntimeException("Unknown drop category '" + category + "' in node path: " + node.path() + " (from drop name: " + dropName + ")");
+        }
+        final var categoryDrops = drops.get(category);
+        if (!categoryDrops.containsKey(tier)) {
+            throw new RuntimeException("Unknown drop tier '" + tier + "' in category '" + category + "' from drop name: " + dropName);
+        }
+        final var drop = Objects.requireNonNull(categoryDrops.get(tier), "Unknown drop tier " + tier);
+
+        // Handle downgrade
         final var downgradeName = node.node("downgrade").getString();
         final var downgrade = downgradeName == null
                 ? null
                 : Objects.requireNonNull(
                         Vars.content.<UnitType>getByName(ContentType.unit, downgradeName),
                         "Unknown unit " + downgradeName);
+
         return new TowerConfig.UnitData(drop, downgrade);
     }
 }

@@ -36,7 +36,7 @@ record TowerConfig(
         boolean mitosis,
         boolean ubind,
         @Nullable List<Block> buildableOnPath,
-        Map<String, List<TowerDrop>> drops,
+        Map<String, Map<String, List<TowerDrop>>> drops,
         Map<UnitType, UnitData> units) {
     public TowerConfig {
         if (healthMultiplier < 1F) {

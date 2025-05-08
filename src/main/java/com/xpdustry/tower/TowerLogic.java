@@ -199,7 +199,7 @@ final class TowerLogic implements PluginListener {
             for (int j = ry - 1; j <= ry + block.size; j++) {
                 final var at = Vars.world.tile(i, j);
                 if (at != null && hasCoreBlock(at)) {
-                    Call.label(player.con, "[scarlet]" + Iconc.cancel, 1F, tile.x * 8f, tile.y * 8f);
+                    Call.label(player.con, "[scarlet]" + Iconc.cancel, 1F, i, j);
                     return false;
                 }
             }
