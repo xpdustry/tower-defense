@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import mindustry.Vars;
+import mindustry.content.UnitTypes;
 import mindustry.ctype.ContentType;
 import mindustry.type.Item;
 import mindustry.type.UnitType;
@@ -67,6 +68,27 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         this.addListener(pathfinder);
         this.addListener(new TowerRenderer());
         this.addListener(new TowerCommands(this));
+
+        // Make sure all enemy units are targetable and hittable and count to waves
+        UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
+        UnitTypes.evoke.targetable = UnitTypes.evoke.hittable = UnitTypes.evoke.isEnemy = true;
+        UnitTypes.incite.targetable = UnitTypes.incite.hittable = UnitTypes.incite.isEnemy = true;
+        UnitTypes.mono.targetable = UnitTypes.mono.hittable = UnitTypes.mono.isEnemy = true;
+
+        // Weapon qol so units dont damage things they shouldnt
+        UnitTypes.crawler.weapons.first().shootOnDeath = false;
+        UnitTypes.navanax.weapons.each(w -> { 
+            if(w.name.equalsIgnoreCase("plasma-laser-mount")) { 
+                w.autoTarget = false; 
+                w.controllable = true; 
+            }
+        });
+
+        // Dont let legs damage buildings
+        UnitTypes.arkyid.legSplashDamage = UnitTypes.arkyid.legSplashRange = 0;
+        UnitTypes.toxopid.legSplashDamage = UnitTypes.toxopid.legSplashRange = 0;
+        UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
+        UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
     }
 
     @Override
@@ -121,6 +143,7 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         return new TowerConfig(
                 root.node("health-multiplier").getFloat(1.03F),
                 root.node("mitosis").getBoolean(true),
+                root.node("downgrade").getBoolean(true),
                 root.node("unit-bind").getBoolean(false),
                 blocks,
                 drops,

@@ -34,6 +34,7 @@ import org.jspecify.annotations.Nullable;
 record TowerConfig(
         float healthMultiplier,
         boolean mitosis,
+        boolean downgrade,
         boolean ubind,
         @Nullable List<Block> buildableOnPath,
         Map<String, Map<String, List<TowerDrop>>> drops,

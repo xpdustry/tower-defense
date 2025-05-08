@@ -3,6 +3,17 @@
 [![Build status](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml)
 [![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
+## Config
+
+```yml
+downgrade: If the unit produces offspring upon death
+mitosis: If the unit produces 2 offspring upon death instead of 1
+unit-bind: If logic unit-bind is allowed|
+healthMultiplier: The amount enemy health is increased per minute
+
+drops: The unit drops. See config.yaml for details
+```
+
 ## Installation
 
 This plugin requires :

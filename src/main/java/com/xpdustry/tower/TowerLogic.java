@@ -29,6 +29,7 @@ import arc.graphics.Color;
 import arc.struct.IntMap;
 import arc.util.Interval;
 import arc.util.Time;
+
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
@@ -36,11 +37,15 @@ import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.InflaterInputStream;
+
+import org.checkerframework.checker.units.qual.m;
+
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
@@ -57,6 +62,7 @@ import mindustry.world.Tile;
 import mindustry.world.blocks.logic.LogicBlock;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.blocks.storage.StorageBlock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,14 +177,18 @@ final class TowerLogic implements PluginListener {
 
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
-        if (this.plugin.config().mitosis() && data.downgrade() != null) {
-            final var unit = data.downgrade().create(Vars.state.rules.waveTeam);
-            unit.set(event.unit.x(), event.unit.y());
-            unit.rotation(event.unit.rotation());
-            unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
-            unit.controller(new TowerAI());
-            unit.add();
-            Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
+        if (this.plugin.config().downgrade() && data.downgrade() != null) {
+            final var mitosis = this.plugin.config().mitosis();
+            final var repeat = mitosis ? 2 : 1;
+            for (int i = 0; i < repeat; i++) {
+                final var unit = data.downgrade().create(Vars.state.rules.waveTeam);
+                unit.set(event.unit.x(), event.unit.y());
+                unit.rotation(event.unit.rotation());
+                unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
+                unit.controller(new TowerAI());
+                unit.add();
+                Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
+            }
         }
     }
 
