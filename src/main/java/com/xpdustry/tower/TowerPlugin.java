@@ -73,7 +73,7 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
         UnitTypes.evoke.targetable = UnitTypes.evoke.hittable = UnitTypes.evoke.isEnemy = true;
         UnitTypes.incite.targetable = UnitTypes.incite.hittable = UnitTypes.incite.isEnemy = true;
-        UnitTypes.mono.targetable = UnitTypes.mono.hittable = UnitTypes.mono.isEnemy = true;
+        UnitTypes.mono.isEnemy = true;
 
         // Weapon qol so units dont damage things they shouldnt
         UnitTypes.crawler.weapons.first().shootOnDeath = false;
@@ -89,6 +89,32 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
         UnitTypes.toxopid.legSplashDamage = UnitTypes.toxopid.legSplashRange = 0;
         UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
         UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
+    }
+
+    @Override
+    public void onExit() {
+        // Revert all modifications on exit
+        UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = false;
+        UnitTypes.evoke.targetable = UnitTypes.evoke.hittable = UnitTypes.evoke.isEnemy = false;
+        UnitTypes.incite.targetable = UnitTypes.incite.hittable = UnitTypes.incite.isEnemy = false;
+        UnitTypes.mono.isEnemy = false;
+
+        UnitTypes.crawler.weapons.first().shootOnDeath = true;
+        UnitTypes.navanax.weapons.each(w -> { 
+            if(w.name.equalsIgnoreCase("plasma-laser-mount")) { 
+                w.autoTarget = true; 
+                w.controllable = false; 
+            }
+        });
+
+        UnitTypes.arkyid.legSplashDamage = 32;
+        UnitTypes.arkyid.legSplashRange = 30;
+        UnitTypes.toxopid.legSplashDamage = 80;
+        UnitTypes.toxopid.legSplashRange = 60;
+        UnitTypes.tecta.legSplashDamage = 32;
+        UnitTypes.tecta.legSplashRange = 30;
+        UnitTypes.collaris.legSplashDamage = 32;
+        UnitTypes.collaris.legSplashRange = 32;
     }
 
     @Override
@@ -173,7 +199,6 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
 
     private TowerConfig.UnitData parseUnit(final Map<String, Map<String, List<TowerDrop>>> drops, final ConfigurationNode node) {
         final var dropName = Objects.requireNonNull(node.node("drop").getString(), "drop field missing for " + node.path());
-        System.out.println("DEBUG dropName: " + dropName + " from node path: " + node.path());
         
         // Split the dropName into category and tier
         final var dropParts = dropName.split("_", 2);
