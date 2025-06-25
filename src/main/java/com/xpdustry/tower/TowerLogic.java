@@ -59,16 +59,17 @@ import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.blocks.storage.StorageBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 final class TowerLogic implements PluginListener {
 
     private static final Logger logger = LoggerFactory.getLogger(TowerLogic.class);
-    private final TowerPlugin plugin;
+    private final TowerConfigProvider config;
     private final IntMap<Interval> messageRateLimits = new IntMap<>();
 
-    public TowerLogic(final TowerPlugin plugin) {
-        this.plugin = plugin;
+    public TowerLogic(final TowerConfigProvider config) {
+        this.config = config;
     }
 
     @EventHandler
@@ -99,7 +100,7 @@ final class TowerLogic implements PluginListener {
         }
 
         if (!(block instanceof LogicBlock && action.config instanceof byte[] data)
-                || plugin.config().ubind()
+                || this.config.get().ubind()
                 || block.privileged) {
             return true;
         }
@@ -160,13 +161,13 @@ final class TowerLogic implements PluginListener {
         if (event.unit.team() != Vars.state.rules.waveTeam) return;
 
         final var items = new ItemSeq();
-        final var data = this.plugin.config().units().get(event.unit.type());
+        final var data = this.config.get().units().get(event.unit.type());
         if (data == null) return;
 
         for (final var drop : data.drops()) drop.apply(items);
 
         final var core = Vars.state.rules.defaultTeam.core();
-        if (core != null) core.items().add(items);
+        if (core != null) core.items.add(items);
 
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
@@ -189,7 +190,7 @@ final class TowerLogic implements PluginListener {
     void onEnemyHealthMultiply() {
         if (!Vars.state.isPlaying()) return;
         final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
-        final var next = prev * this.plugin.config().healthMultiplier();
+        final var next = prev * this.config.get().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
         Call.setRules(Vars.state.rules);
         Distributor.get().getEventBus().post(new PowerIncreaseEvent.Health(Vars.state.rules.waveTeam, prev, next));

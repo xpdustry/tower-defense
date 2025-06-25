@@ -43,7 +43,6 @@ dependencies {
     compileOnly(toxopid.dependencies.arcCore)
     compileOnly(toxopid.dependencies.mindustryCore)
     compileOnly(libs.distributor.api)
-    implementation(libs.distributor.command.lamp)
     compileOnlyApi(libs.jspecify)
     annotationProcessor(libs.nullaway)
     errorprone(libs.errorprone.core)
@@ -150,5 +149,5 @@ val downloadDistributorCommon by tasks.registering(GithubAssetDownload::class) {
 }
 
 tasks.runMindustryServer {
-    mods.from(downloadSlf4md, files("libs/distributor-common.jar"))
+    mods.from(downloadSlf4md, downloadDistributorCommon)
 }

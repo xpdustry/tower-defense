@@ -1,7 +1,7 @@
 # tower-defense
 
 [![Build status](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/xpdustry/tower-defense/actions/workflows/build.yml)
-[![Mindustry 7.0](https://img.shields.io/badge/Mindustry-7.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
+[![Mindustry 8.0](https://img.shields.io/badge/Mindustry-8.0-ffd37f)](https://github.com/Anuken/Mindustry/releases)
 
 ## Config
 
