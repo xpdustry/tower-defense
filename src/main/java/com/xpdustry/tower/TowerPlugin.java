@@ -29,18 +29,8 @@ import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import mindustry.Vars;
-import mindustry.ctype.ContentType;
-import mindustry.type.Item;
-import mindustry.type.UnitType;
-import org.jspecify.annotations.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 @SuppressWarnings("unused")
 public final class TowerPlugin extends AbstractMindustryPlugin {
@@ -51,98 +41,25 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
             PluginAnnotationProcessor.triggers(this),
             PluginAnnotationProcessor.playerActions(this));
 
-    private @Nullable TowerConfig config;
-
     @Override
     public void onInit() {
+        final var config = new TowerConfigProvider(this);
         try {
-            this.config = load();
-        } catch (final Exception e) {
+            config.reload();
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to load TD", e);
         }
-        this.addListener(new TowerLogic(this));
+        this.addListener(new TowerLogic(config));
         final var pathfinder = new TowerPathfinder();
         Vars.pathfinder = pathfinder;
         this.addListener(pathfinder);
         this.addListener(new TowerRenderer());
-        this.addListener(new TowerCommands(this));
+        this.addListener(new TowerCommands(this, config));
     }
 
     @Override
     protected void addListener(final PluginListener listener) {
         super.addListener(listener);
         processor.process(listener);
-    }
-
-    TowerConfig config() {
-        return Objects.requireNonNull(config);
-    }
-
-    private TowerConfig load() throws IOException {
-        final var file = this.getDirectory().resolve("config.yaml");
-        if (Files.notExists(file)) {
-            try (final var stream = Objects.requireNonNull(
-                    this.getClass().getClassLoader().getResourceAsStream("com/xpdustry/tower/config.yaml"))) {
-                Files.copy(stream, file);
-            }
-        }
-
-        final var root = YamlConfigurationLoader.builder().path(file).build().load();
-
-        final var drops = root.node("drops").childrenMap().entrySet().stream()
-                .collect(Collectors.toUnmodifiableMap(
-                        entry -> entry.getKey().toString(), entry -> entry.getValue().childrenList().stream()
-                                .map(this::parseDrop)
-                                .toList()));
-
-        final var units = root.node("units").childrenMap().entrySet().stream()
-                .collect(Collectors.toUnmodifiableMap(
-                        entry -> {
-                            final var name = entry.getKey().toString();
-                            return Objects.requireNonNull(
-                                    Vars.content.<UnitType>getByName(ContentType.unit, name), "Unknown unit " + name);
-                        },
-                        entry -> parseUnit(drops, entry.getValue())));
-
-        return new TowerConfig(
-                root.node("health-multiplier").getFloat(1.03F),
-                root.node("mitosis").getBoolean(true),
-                root.node("unit-bind").getBoolean(false),
-                drops,
-                units);
-    }
-
-    private TowerDrop parseDrop(final ConfigurationNode node) {
-        final var type = node.node("type").getString("simple");
-        switch (type) {
-            case "simple" -> {
-                final var itemName =
-                        Objects.requireNonNull(node.node("item").getString(), "item field missing for " + node.path());
-                final var item = Objects.requireNonNull(
-                        Vars.content.<Item>getByName(ContentType.item, itemName), "Unknown item " + itemName);
-                final var amountNode = node.node("amount");
-                if (amountNode.virtual()) throw new RuntimeException("The amount of item is missing");
-                return new TowerDrop.Simple(item, amountNode.getInt());
-            }
-            case "random" -> {
-                return new TowerDrop.Random(node.node("items").childrenList().stream()
-                        .map(this::parseDrop)
-                        .toList());
-            }
-            default -> throw new RuntimeException("Unknown bounty type: " + type);
-        }
-    }
-
-    private TowerConfig.UnitData parseUnit(final Map<String, List<TowerDrop>> drops, final ConfigurationNode node) {
-        final var dropName =
-                Objects.requireNonNull(node.node("drop").getString(), "drop field missing for " + node.path());
-        final var drop = Objects.requireNonNull(drops.get(dropName), "Unknown drop bundle " + dropName);
-        final var downgradeName = node.node("downgrade").getString();
-        final var downgrade = downgradeName == null
-                ? null
-                : Objects.requireNonNull(
-                        Vars.content.<UnitType>getByName(ContentType.unit, downgradeName),
-                        "Unknown unit " + downgradeName);
-        return new TowerConfig.UnitData(drop, downgrade);
     }
 }

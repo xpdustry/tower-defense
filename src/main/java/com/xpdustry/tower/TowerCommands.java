@@ -31,6 +31,7 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import java.awt.Color;
+import java.io.IOException;
 import mindustry.Vars;
 import mindustry.gen.Player;
 import org.jspecify.annotations.Nullable;
@@ -42,9 +43,11 @@ import static com.xpdustry.distributor.api.component.TextComponent.text;
 final class TowerCommands implements PluginListener {
 
     private final MindustryPlugin plugin;
+    private final TowerConfigProvider config;
 
-    TowerCommands(final MindustryPlugin plugin) {
+    TowerCommands(final MindustryPlugin plugin, final TowerConfigProvider config) {
         this.plugin = plugin;
+        this.config = config;
     }
 
     @Override
@@ -55,6 +58,15 @@ final class TowerCommands implements PluginListener {
     @Override
     public void onPluginServerCommandsRegistration(final CommandHandler handler) {
         this.onPluginSharedCommandsRegistration(handler);
+
+        handler.register("td-reload", "Reload TD configuration.", args -> {
+            try {
+                this.config.reload();
+                this.plugin.getLogger().info("TD configuration reloaded!");
+            } catch (final IOException e) {
+                this.plugin.getLogger().error("Failed to reload TD configuration!", e);
+            }
+        });
     }
 
     private void onPluginSharedCommandsRegistration(final CommandHandler handler) {
@@ -69,7 +81,7 @@ final class TowerCommands implements PluginListener {
                     components(
                             ComponentColor.from(Color.gray),
                             text("(v"),
-                            text(plugin.getMetadata().getVersion()),
+                            text(this.plugin.getMetadata().getVersion()),
                             text(')')),
                     text(':'),
                     newline(),
