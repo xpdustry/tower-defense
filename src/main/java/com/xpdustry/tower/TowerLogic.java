@@ -80,8 +80,8 @@ final class TowerLogic implements PluginListener {
         return switch (action.type) {
             case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
             case placeBlock -> hasNoNearbyCore(action.block, action.tile);
-            case dropPayload -> !(action.payload.content() instanceof Block block)
-                    || hasNoNearbyCore(block, action.tile);
+            case dropPayload ->
+                !(action.payload.content() instanceof Block block) || hasNoNearbyCore(block, action.tile);
             default -> true;
         };
     }
@@ -165,7 +165,7 @@ final class TowerLogic implements PluginListener {
         for (final var drop : data.drops()) drop.apply(items);
 
         final var core = Vars.state.rules.defaultTeam.core();
-        if (core != null) core.items().add(items);
+        if (core != null) core.items.add(items);
 
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 

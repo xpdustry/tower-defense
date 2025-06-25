@@ -28,9 +28,9 @@ package com.xpdustry.tower;
 import arc.struct.IntSet;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
+import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.util.Priority;
-import java.util.Objects;
 import mindustry.Vars;
 import mindustry.ai.Pathfinder;
 import mindustry.content.Blocks;
@@ -41,32 +41,14 @@ import mindustry.world.Tile;
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
-    static final int COST_AIR;
-
-    static {
-        wrapPathCost(Pathfinder.costGround);
-        wrapPathCost(Pathfinder.costLegs);
-
-        costTypes.add((team, tile) -> {
-            final var ground = Objects.requireNonNull(costTypes.get(Pathfinder.costGround));
-            final var cost = ground.getCost(team, tile);
-            return cost <= -1 ? 6000 : cost;
-        });
-        COST_AIR = costTypes.size - 1;
-    }
-
-    private static void wrapPathCost(final int pathCostType) {
-        final var costType = Objects.requireNonNull(Pathfinder.costTypes.get(pathCostType));
-        Pathfinder.costTypes.set(pathCostType, (team, tile) -> {
-            int cost = costType.getCost(team, tile);
-            if ((tile & BIT_MASK_TOWER_PASSABLE) == 0 && team == Vars.state.rules.waveTeam.id && cost >= 0) {
-                cost += 6000;
-            }
-            return cost;
-        });
-    }
 
     private final IntSet towerPassableFloors = new IntSet();
+
+    @EventHandler
+    void onServerLoadEvent(final EventType.ServerLoadEvent event) {
+        // TODO This trick may not be able to support modded units with custom path types
+        MindustryCollections.mutableList(Pathfinder.costTypes).replaceAll(TowerPathCostWrapper::new);
+    }
 
     @EventHandler(priority = Priority.HIGH)
     void onWorldLoadEvent(final EventType.WorldLoadEvent event) {
@@ -79,10 +61,10 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     }
 
     private void onGenericLoadEvent() {
-        towerPassableFloors.clear();
+        this.towerPassableFloors.clear();
         for (final var tile : Vars.world.tiles) {
             if (tile.overlay().equals(Blocks.spawn)) {
-                towerPassableFloors.add(tile.floor().id);
+                this.towerPassableFloors.add(tile.floor().id);
             }
         }
     }
@@ -96,7 +78,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
         action.tile.getLinkedTilesAs(action.block, tile -> covered.add(tile.floor().id));
         final var iterator = covered.iterator();
         while (iterator.hasNext) {
-            if (towerPassableFloors.contains(iterator.next())) {
+            if (this.towerPassableFloors.contains(iterator.next())) {
                 return false;
             }
         }
@@ -105,6 +87,22 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     @Override
     public int packTile(final Tile tile) {
-        return super.packTile(tile) | (towerPassableFloors.contains(tile.floor().id) ? BIT_MASK_TOWER_PASSABLE : 0);
+        int pack = super.packTile(tile);
+        if (this.towerPassableFloors.contains(tile.floor().id) && !tile.block().isStatic()) {
+            pack |= BIT_MASK_TOWER_PASSABLE;
+        }
+        return pack;
+    }
+
+    private record TowerPathCostWrapper(PathCost inner) implements PathCost {
+
+        @Override
+        public int getCost(final int team, final int tile) {
+            int cost = this.inner.getCost(team, tile);
+            if ((tile & BIT_MASK_TOWER_PASSABLE) == 0 && team == Vars.state.rules.waveTeam.id && cost >= 0) {
+                cost += 6000;
+            }
+            return cost;
+        }
     }
 }

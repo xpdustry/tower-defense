@@ -26,14 +26,14 @@
 package com.xpdustry.tower;
 
 import arc.util.CommandHandler;
-import com.xpdustry.distributor.api.command.lamp.MindustryLamp;
-import com.xpdustry.distributor.api.command.lamp.actor.MindustryCommandActor;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import java.awt.Color;
 import mindustry.Vars;
-import revxrsal.commands.annotation.Command;
+import mindustry.gen.Player;
+import org.jspecify.annotations.Nullable;
 
 import static com.xpdustry.distributor.api.component.ListComponent.components;
 import static com.xpdustry.distributor.api.component.TextComponent.newline;
@@ -49,30 +49,33 @@ final class TowerCommands implements PluginListener {
 
     @Override
     public void onPluginClientCommandsRegistration(final CommandHandler handler) {
-        MindustryLamp.builder(plugin, handler).build().register(this);
+        this.onPluginSharedCommandsRegistration(handler);
     }
 
     @Override
     public void onPluginServerCommandsRegistration(final CommandHandler handler) {
-        MindustryLamp.builder(plugin, handler).build().register(this);
+        this.onPluginSharedCommandsRegistration(handler);
     }
 
-    @Command({"td"})
-    void onTowerInfoCommand(final MindustryCommandActor actor) {
-        actor.getCommandSender()
-                .reply(components(
-                        ComponentColor.WHITE,
-                        text(">>>", ComponentColor.CYAN),
-                        text(" Welcome to TD "),
-                        components(
-                                ComponentColor.from(Color.gray),
-                                text("(v"),
-                                text(plugin.getMetadata().getVersion()),
-                                text(')')),
-                        text(':'),
-                        newline(),
-                        text('>', ComponentColor.ACCENT),
-                        text(" The enemy is currently at %.2fx strength."
-                                .formatted(Vars.state.rules.waveTeam.rules().unitHealthMultiplier))));
+    private void onPluginSharedCommandsRegistration(final CommandHandler handler) {
+        handler.<@Nullable Player>register("td", "Information about the TD gamemode", (args, player) -> {
+            final var audience = player == null
+                    ? Distributor.get().getAudienceProvider().getServer()
+                    : Distributor.get().getAudienceProvider().getPlayer(player);
+            audience.sendMessage(components(
+                    ComponentColor.WHITE,
+                    text(">>>", ComponentColor.CYAN),
+                    text(" Welcome to TD "),
+                    components(
+                            ComponentColor.from(Color.gray),
+                            text("(v"),
+                            text(plugin.getMetadata().getVersion()),
+                            text(')')),
+                    text(':'),
+                    newline(),
+                    text('>', ComponentColor.ACCENT),
+                    text(" The enemy is currently at %.2fx strength."
+                            .formatted(Vars.state.rules.waveTeam.rules().unitHealthMultiplier))));
+        });
     }
 }
