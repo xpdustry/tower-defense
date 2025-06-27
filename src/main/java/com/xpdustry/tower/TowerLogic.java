@@ -26,9 +26,11 @@
 package com.xpdustry.tower;
 
 import arc.graphics.Color;
+import arc.math.Rand;
 import arc.struct.IntMap;
 import arc.util.Interval;
 import arc.util.Time;
+import arc.util.Tmp;
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
@@ -45,6 +47,7 @@ import java.util.zip.InflaterInputStream;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
+import mindustry.content.UnitTypes;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Iconc;
@@ -73,6 +76,32 @@ final class TowerLogic implements PluginListener {
         this.config = config;
     }
 
+    @Override
+    public void onPluginInit() {
+        // TODO Store modifications somewhere to not make these changes permanent
+
+        // Make sure all enemy units are targetable and hittable and count to waves
+        UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
+        UnitTypes.evoke.targetable = UnitTypes.evoke.hittable = UnitTypes.evoke.isEnemy = true;
+        UnitTypes.incite.targetable = UnitTypes.incite.hittable = UnitTypes.incite.isEnemy = true;
+        UnitTypes.mono.isEnemy = true;
+
+        // Weapon qol so units dont damage things they shouldnt
+        UnitTypes.crawler.weapons.first().shootOnDeath = false;
+        UnitTypes.navanax.weapons.each(w -> {
+            if(w.name.equalsIgnoreCase("plasma-laser-mount")) {
+                w.autoTarget = false;
+                w.controllable = true;
+            }
+        });
+
+        // Dont let legs damage buildings
+        UnitTypes.arkyid.legSplashDamage = UnitTypes.arkyid.legSplashRange = 0;
+        UnitTypes.toxopid.legSplashDamage = UnitTypes.toxopid.legSplashRange = 0;
+        UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
+        UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
+    }
+
     @EventHandler
     void onPlayerQuit(final EventType.PlayerLeave event) {
         messageRateLimits.remove(event.player.id());
@@ -83,8 +112,9 @@ final class TowerLogic implements PluginListener {
         return switch (action.type) {
             case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
             case placeBlock -> hasNoNearbyCore(action.block, action.tile, action.player);
-            case dropPayload -> !(action.payload.content() instanceof Block block)
-                    || hasNoNearbyCore(block, action.tile, action.player);
+            case dropPayload ->
+                !(action.payload.content() instanceof Block block)
+                        || hasNoNearbyCore(block, action.tile, action.player);
             default -> true;
         };
     }
@@ -173,14 +203,17 @@ final class TowerLogic implements PluginListener {
 
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
-        if (this.config.get().mitosis() && data.downgrade().isPresent()) {
-            final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
-            unit.set(event.unit.x(), event.unit.y());
-            unit.rotation(event.unit.rotation());
-            unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
-            unit.controller(new TowerAI());
-            unit.add();
-            Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
+        if (data.downgrade().isPresent()) {
+            for (int i = 0; i < this.config.get().mitosis(); i++) {
+                final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
+                Tmp.v1.rnd(Vars.tilesize * 2);
+                unit.set(event.unit.x() + Tmp.v1.x, event.unit.y() + Tmp.v1.y);
+                unit.rotation(event.unit.rotation());
+                unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
+                unit.controller(new TowerAI());
+                unit.add();
+                Call.effect(Fx.spawn, event.unit.x(), event.unit.y(), 0F, Vars.state.rules.waveTeam.color);
+            }
         }
     }
 

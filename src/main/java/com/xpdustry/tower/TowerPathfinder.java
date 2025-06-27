@@ -31,24 +31,21 @@ import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.util.Priority;
-import java.util.List;
-import java.util.Objects;
 import mindustry.Vars;
 import mindustry.ai.Pathfinder;
 import mindustry.content.Blocks;
 import mindustry.game.EventType;
-import mindustry.net.Administration;
-import mindustry.world.Block;
-import mindustry.world.Tile;
 import mindustry.gen.Call;
 import mindustry.gen.Iconc;
-import org.jspecify.annotations.Nullable;
+import mindustry.net.Administration;
+import mindustry.world.Tile;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
     private final IntSet towerPassableFloors = new IntSet();
+    private final IntSet towerBlockWhitelist = new IntSet();
 
     @EventHandler
     void onServerLoadEvent(final EventType.ServerLoadEvent event) {
@@ -77,7 +74,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     @PlayerActionHandler
     boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
-        if (action.type != Administration.ActionType.placeBlock || (blocks != null && blocks.contains(action.block))) {
+        if (action.type != Administration.ActionType.placeBlock || towerBlockWhitelist.contains(action.block.id)) {
             return true;
         }
         final var covered = new IntSet();

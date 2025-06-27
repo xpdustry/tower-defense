@@ -28,13 +28,16 @@ package com.xpdustry.tower;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import mindustry.type.UnitType;
+import mindustry.world.Block;
 import org.github.gestalt.config.annotations.Config;
 
 public record TowerConfig(
         float healthMultiplier,
-        boolean mitosis,
+        int mitosis,
         @Config(path = "unit-bind") boolean ubind,
+        Set<Block> blockWhitelist,
         Map<String, List<TowerDrop>> drops,
         Map<UnitType, UnitData> units) {
     public TowerConfig {

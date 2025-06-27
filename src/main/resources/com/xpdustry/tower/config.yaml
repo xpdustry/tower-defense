@@ -1,428 +1,423 @@
 health-multiplier: 1.03
-
-mitosis: true
-downgrade: true
-
+mitosis: 2
 unit-bind: false
-
-buildable-on-path:
+block-whitelist:
   - shock-mine
 
 drops:
-  dropsSerpulo:
-    tier1-drop:
-      - item: "copper"
-        amount: 20
-      - item: "lead"
-        amount: 20
-      - item: "silicon"
-        amount: 5
-      - type: "random"
-        items:
-          - item: "graphite"
-            amount: 10
-          - item: "metaglass"
-            amount: 5
-          - item: "titanium"
-            amount: 10
 
-    tier2-drop:
-      - item: "copper"
-        amount: 30
-      - item: "lead"
-        amount: 30
-      - item: "silicon"
-        amount: 10
-      - type: "random"
-        items:
-          - item: "graphite"
-            amount: 20
-          - item: "metaglass"
-            amount: 10
-          - item: "titanium"
-            amount: 20
+  serpulo-tier1-drop:
+    - item: "copper"
+      amount: 20
+    - item: "lead"
+      amount: 20
+    - item: "silicon"
+      amount: 5
+    - type: "random"
+      items:
+        - item: "graphite"
+          amount: 10
+        - item: "metaglass"
+          amount: 5
+        - item: "titanium"
+          amount: 10
 
-    tier3-drop:
-      - item: "copper"
-        amount: 50
-      - item: "lead"
-        amount: 50
-      - item: "silicon"
-        amount: 30
-      - item: "phase-fabric"
-        amount: 3
-      - item: "surge-alloy"
-        amount: 3
-      - type: "random"
-        items:
-          - item: "graphite"
-            amount: 30
-          - item: "metaglass"
-            amount: 20
-          - item: "titanium"
-            amount: 30
-          - item: "plastanium"
-            amount: 50
-          - item: "thorium"
-            amount: 50
+  serpulo-tier2-drop:
+    - item: "copper"
+      amount: 30
+    - item: "lead"
+      amount: 30
+    - item: "silicon"
+      amount: 10
+    - type: "random"
+      items:
+        - item: "graphite"
+          amount: 20
+        - item: "metaglass"
+          amount: 10
+        - item: "titanium"
+          amount: 20
 
-    tier4-drop:
-      - item: "copper"
-        amount: 200
-      - item: "lead"
-        amount: 200
-      - item: "silicon"
-        amount: 50
-      - item: "phase-fabric"
-        amount: 20
-      - item: "surge-alloy"
-        amount: 40
-      - type: "random"
-        items:
-          - item: "graphite"
-            amount: 30
-          - item: "metaglass"
-            amount: 30
-          - item: "titanium"
-            amount: 30
-          - item: "plastanium"
-            amount: 80
-          - item: "thorium"
-            amount: 80
+  serpulo-tier3-drop:
+    - item: "copper"
+      amount: 50
+    - item: "lead"
+      amount: 50
+    - item: "silicon"
+      amount: 30
+    - item: "phase-fabric"
+      amount: 3
+    - item: "surge-alloy"
+      amount: 3
+    - type: "random"
+      items:
+        - item: "graphite"
+          amount: 30
+        - item: "metaglass"
+          amount: 20
+        - item: "titanium"
+          amount: 30
+        - item: "plastanium"
+          amount: 50
+        - item: "thorium"
+          amount: 50
 
-    tier5-drop:
-      - item: "copper"
-        amount: 300
-      - item: "lead"
-        amount: 300
-      - item: "silicon"
-        amount: 100
-      - item: "phase-fabric"
-        amount: 30
-      - item: "surge-alloy"
-        amount: 60
-      - type: "random"
-        items:
-          - item: "graphite"
-            amount: 40
-          - item: "metaglass"
-            amount: 40
-          - item: "titanium"
-            amount: 40
-          - item: "plastanium"
-            amount: 120
-          - item: "thorium"
-            amount: 120
+  serpulo-tier4-drop:
+    - item: "copper"
+      amount: 200
+    - item: "lead"
+      amount: 200
+    - item: "silicon"
+      amount: 50
+    - item: "phase-fabric"
+      amount: 20
+    - item: "surge-alloy"
+      amount: 40
+    - type: "random"
+      items:
+        - item: "graphite"
+          amount: 30
+        - item: "metaglass"
+          amount: 30
+        - item: "titanium"
+          amount: 30
+        - item: "plastanium"
+          amount: 80
+        - item: "thorium"
+          amount: 80
 
-  dropsErekir:
-    tier1-drop:
-      - item: "beryllium"
-        amount: 20
-      - item: "graphite"
-        amount: 20
-      - item: "silicon"
-        amount: 10
-      - type: "random"
-        items:
-          - item: "beryllium"
-            amount: 15
-          - item: "graphite"
-            amount: 10
-          - item: "tungsten"
-            amount: 5
+  serpulo-tier5-drop:
+    - item: "copper"
+      amount: 300
+    - item: "lead"
+      amount: 300
+    - item: "silicon"
+      amount: 100
+    - item: "phase-fabric"
+      amount: 30
+    - item: "surge-alloy"
+      amount: 60
+    - type: "random"
+      items:
+        - item: "graphite"
+          amount: 40
+        - item: "metaglass"
+          amount: 40
+        - item: "titanium"
+          amount: 40
+        - item: "plastanium"
+          amount: 120
+        - item: "thorium"
+          amount: 120
 
-    tier2-drop:
-      - item: "beryllium"
-        amount: 35
-      - item: "graphite"
-        amount: 35
-      - item: "silicon"
-        amount: 20
-      - item: "tungsten"
-        amount: 10
-      - type: "random"
-        items:
-          - item: "beryllium"
-            amount: 20
-          - item: "tungsten"
-            amount: 15
-          - item: "oxide"
-            amount: 20
+  erekir-tier1-drop:
+    - item: "beryllium"
+      amount: 20
+    - item: "graphite"
+      amount: 20
+    - item: "silicon"
+      amount: 10
+    - type: "random"
+      items:
+        - item: "beryllium"
+          amount: 15
+        - item: "graphite"
+          amount: 10
+        - item: "tungsten"
+          amount: 5
 
-    tier3-drop:
-      - item: "beryllium"
-        amount: 50
-      - item: "graphite"
-        amount: 50
-      - item: "silicon"
-        amount: 30
-      - item: "tungsten"
-        amount: 30
-      - item: "oxide"
-        amount: 30
-      - item: "thorium"
-        amount: 15
-      - type: "random"
-        items:
-          - item: "beryllium"
-            amount: 30
-          - item: "tungsten"
-            amount: 25
-          - item: "thorium"
-            amount: 30
-          - item: "surge-alloy"
-            amount: 50
-          - item: "carbide"
-            amount: 50
+  erekir-tier2-drop:
+    - item: "beryllium"
+      amount: 35
+    - item: "graphite"
+      amount: 35
+    - item: "silicon"
+      amount: 20
+    - item: "tungsten"
+      amount: 10
+    - type: "random"
+      items:
+        - item: "beryllium"
+          amount: 20
+        - item: "tungsten"
+          amount: 15
+        - item: "oxide"
+          amount: 20
 
-    tier4-drop:
-      - item: "beryllium"
-        amount: 250
-      - item: "graphite"
-        amount: 250
-      - item: "silicon"
-        amount: 200
-      - item: "tungsten"
-        amount: 100
-      - item: "oxide"
-        amount: 60
-      - item: "thorium"
-        amount: 80
-      - item: "surge-alloy"
-        amount: 50
-      - item: "carbide"
-        amount: 50
-      - type: "random"
-        items:
-          - item: "thorium"
-            amount: 30
-          - item: "tungsten"
-            amount: 60
-          - item: "carbide"
-            amount: 30
-          - item: "surge-alloy"
-            amount: 80
-          - item: "phase-fabric"
-            amount: 80
+  erekir-tier3-drop:
+    - item: "beryllium"
+      amount: 50
+    - item: "graphite"
+      amount: 50
+    - item: "silicon"
+      amount: 30
+    - item: "tungsten"
+      amount: 30
+    - item: "oxide"
+      amount: 30
+    - item: "thorium"
+      amount: 15
+    - type: "random"
+      items:
+        - item: "beryllium"
+          amount: 30
+        - item: "tungsten"
+          amount: 25
+        - item: "thorium"
+          amount: 30
+        - item: "surge-alloy"
+          amount: 50
+        - item: "carbide"
+          amount: 50
 
-    tier5-drop:
-      - item: "beryllium"
-        amount: 400
-      - item: "graphite"
-        amount: 400
-      - item: "silicon"
-        amount: 200
-      - item: "tungsten"
-        amount: 100
-      - item: "thorium"
-        amount: 60
-      - item: "oxide"
-        amount: 150
-      - item: "surge-alloy"
-        amount: 60
-      - item: "carbide"
-        amount: 80
-      - item: "phase-fabric"
-        amount: 50
-      - type: "random"
-        items:
-          - item: "oxide"
-            amount: 80
-          - item: "surge-alloy"
-            amount: 40
-          - item: "carbide"
-            amount: 60
-          - item: "phase-fabric"
-            amount: 120
-          - item: "thorium"
-            amount: 160
+  erekir-tier4-drop:
+    - item: "beryllium"
+      amount: 250
+    - item: "graphite"
+      amount: 250
+    - item: "silicon"
+      amount: 200
+    - item: "tungsten"
+      amount: 100
+    - item: "oxide"
+      amount: 60
+    - item: "thorium"
+      amount: 80
+    - item: "surge-alloy"
+      amount: 50
+    - item: "carbide"
+      amount: 50
+    - type: "random"
+      items:
+        - item: "thorium"
+          amount: 30
+        - item: "tungsten"
+          amount: 60
+        - item: "carbide"
+          amount: 30
+        - item: "surge-alloy"
+          amount: 80
+        - item: "phase-fabric"
+          amount: 80
+
+  erekir-tier5-drop:
+    - item: "beryllium"
+      amount: 400
+    - item: "graphite"
+      amount: 400
+    - item: "silicon"
+      amount: 200
+    - item: "tungsten"
+      amount: 100
+    - item: "thorium"
+      amount: 60
+    - item: "oxide"
+      amount: 150
+    - item: "surge-alloy"
+      amount: 60
+    - item: "carbide"
+      amount: 80
+    - item: "phase-fabric"
+      amount: 50
+    - type: "random"
+      items:
+        - item: "oxide"
+          amount: 80
+        - item: "surge-alloy"
+          amount: 40
+        - item: "carbide"
+          amount: 60
+        - item: "phase-fabric"
+          amount: 120
+        - item: "thorium"
+          amount: 160
 
 units:
   # Serpulo Tree
   # Dagger Tree
   dagger:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   mace:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "dagger"
   fortress:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "mace"
   scepter:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "fortress"
   reign:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "scepter"
 
   # Crawler Tree
   crawler:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   atrax:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "crawler"
   spiroct:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "atrax"
   arkyid:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "spiroct"
   toxopid:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "arkyid"
 
   # Nova Tree
   nova:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   pulsar:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "nova"
   quasar:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "pulsar"
   vela:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "quasar"
   corvus:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "vela"
 
   # Mono Tree
   mono:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   poly:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "mono"
   mega:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "poly"
   quad:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "mega"
   oct:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "quad"
 
   # Flare Tree
   flare:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   horizon:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "flare"
   zenith:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "horizon"
   antumbra:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "zenith"
   eclipse:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "antumbra"
 
   # Risso Tree - Naval
   risso:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   minke:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "risso"
   bryde:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "minke"
   sei:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "bryde"
   omura:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "sei"
 
   # Retusa Tree - Naval
   retusa:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   oxynoe:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "retusa"
   cyerce:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "oxynoe"
   aegires:
-    drop: "dropsSerpulo_tier4-drop"
+    drop: "serpulo-tier4-drop"
     downgrade: "cyerce"
   navanax:
-    drop: "dropsSerpulo_tier5-drop"
+    drop: "serpulo-tier5-drop"
     downgrade: "cyerce"
 
   # Erekir Tree
   # Stell Tree
   stell:
-    drop: "dropsErekir_tier1-drop"
+    drop: "erekir-tier1-drop"
   locus:
-    drop: "dropsErekir_tier2-drop"
+    drop: "erekir-tier2-drop"
     downgrade: "stell"
   precept:
-    drop: "dropsErekir_tier3-drop"
+    drop: "erekir-tier3-drop"
     downgrade: "locus"
   vanquish:
-    drop: "dropsErekir_tier4-drop"
+    drop: "erekir-tier4-drop"
     downgrade: "precept"
   conquer:
-    drop: "dropsErekir_tier5-drop"
+    drop: "erekir-tier5-drop"
     downgrade: "vanquish"
 
   # Elude Tree
   elude:
-    drop: "dropsErekir_tier1-drop"
+    drop: "erekir-tier1-drop"
   avert:
-    drop: "dropsErekir_tier2-drop"
+    drop: "erekir-tier2-drop"
     downgrade: "elude"
   obviate:
-    drop: "dropsErekir_tier3-drop"
+    drop: "erekir-tier3-drop"
     downgrade: "avert"
   quell:
-    drop: "dropsErekir_tier4-drop"
+    drop: "erekir-tier4-drop"
     downgrade: "obviate"
   disrupt:
-    drop: "dropsErekir_tier5-drop"
+    drop: "erekir-tier5-drop"
     downgrade: "quell"
 
   # Merui Tree
   merui:
-    drop: "dropsErekir_tier1-drop"
+    drop: "erekir-tier1-drop"
   cleroi:
-    drop: "dropsErekir_tier2-drop"
+    drop: "erekir-tier2-drop"
     downgrade: "merui"
   anthicus:
-    drop: "dropsErekir_tier3-drop"
+    drop: "erekir-tier3-drop"
     downgrade: "cleroi"
   tecta:
-    drop: "dropsErekir_tier4-drop"
+    drop: "erekir-tier4-drop"
     downgrade: "anthicus"
   collaris:
-    drop: "dropsErekir_tier5-drop"
+    drop: "erekir-tier5-drop"
     downgrade: "tecta"
 
   # Erekir Core Unit
   evoke:
-    drop: "dropsErekir_tier2-drop"
+    drop: "erekir-tier2-drop"
   incite:
-    drop: "dropsErekir_tier3-drop"
+    drop: "erekir-tier3-drop"
     downgrade: "evoke"
   emanate:
-    drop: "dropsErekir_tier4-drop"
+    drop: "erekir-tier4-drop"
     downgrade: "incite"
 
   # Serpulo Core Unit
   alpha:
-    drop: "dropsSerpulo_tier1-drop"
+    drop: "serpulo-tier1-drop"
   beta:
-    drop: "dropsSerpulo_tier2-drop"
+    drop: "serpulo-tier2-drop"
     downgrade: "alpha"
   gamma:
-    drop: "dropsSerpulo_tier3-drop"
+    drop: "serpulo-tier3-drop"
     downgrade: "beta"
 
   # Latum Tree - TODO: Remove in v8?
   renale:
-    drop: "dropsErekir_tier2-drop"
+    drop: "erekir-tier2-drop"
   latum:
-    drop: "dropsErekir_tier5-drop"
+    drop: "erekir-tier5-drop"
     downgrade: "renale"
