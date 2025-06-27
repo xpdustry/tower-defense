@@ -26,7 +26,6 @@
 package com.xpdustry.tower;
 
 import arc.graphics.Color;
-import arc.math.Rand;
 import arc.struct.IntMap;
 import arc.util.Interval;
 import arc.util.Time;
@@ -89,7 +88,7 @@ final class TowerLogic implements PluginListener {
         // Weapon qol so units dont damage things they shouldnt
         UnitTypes.crawler.weapons.first().shootOnDeath = false;
         UnitTypes.navanax.weapons.each(w -> {
-            if(w.name.equalsIgnoreCase("plasma-laser-mount")) {
+            if (w.name.equalsIgnoreCase("plasma-laser-mount")) {
                 w.autoTarget = false;
                 w.controllable = true;
             }
