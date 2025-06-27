@@ -28,7 +28,6 @@ package com.xpdustry.tower;
 import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
 import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
-import java.io.IOException;
 import java.util.List;
 import mindustry.Vars;
 
@@ -41,25 +40,27 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
             PluginAnnotationProcessor.triggers(this),
             PluginAnnotationProcessor.playerActions(this));
 
+    private final TowerConfigProvider config = new TowerConfigProvider(this);
+
     @Override
     public void onInit() {
-        final var config = new TowerConfigProvider(this);
         try {
-            config.reload();
-        } catch (final IOException e) {
+            this.config.reload();
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to load TD", e);
         }
-        this.addListener(new TowerLogic(config));
+        this.addListener(this.config);
+        this.addListener(new TowerLogic(this.config));
         final var pathfinder = new TowerPathfinder();
         Vars.pathfinder = pathfinder;
         this.addListener(pathfinder);
         this.addListener(new TowerRenderer());
-        this.addListener(new TowerCommands(this, config));
+        this.addListener(new TowerCommands(this));
     }
 
     @Override
     protected void addListener(final PluginListener listener) {
         super.addListener(listener);
-        processor.process(listener);
+        this.processor.process(listener);
     }
 }

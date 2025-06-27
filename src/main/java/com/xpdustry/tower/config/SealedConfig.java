@@ -23,30 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.tower;
+package com.xpdustry.tower.config;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import mindustry.type.UnitType;
-import org.github.gestalt.config.annotations.Config;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public record TowerConfig(
-        float healthMultiplier,
-        boolean mitosis,
-        @Config(path = "unit-bind") boolean ubind,
-        Map<String, List<TowerDrop>> drops,
-        Map<UnitType, UnitData> units) {
-    public TowerConfig {
-        if (healthMultiplier < 1F) {
-            throw new IllegalArgumentException("health-multiplier can't be lower than 1");
-        }
-        for (final var data : units.values()) {
-            if (!drops.containsKey(data.drop)) {
-                throw new IllegalArgumentException("drops do not exist: " + data.drop);
-            }
-        }
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SealedConfig {
+    String name() default "";
 
-    public record UnitData(String drop, Optional<UnitType> downgrade) {}
+    String def() default "";
 }
