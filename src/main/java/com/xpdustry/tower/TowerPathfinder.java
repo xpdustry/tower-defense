@@ -35,6 +35,8 @@ import mindustry.Vars;
 import mindustry.ai.Pathfinder;
 import mindustry.content.Blocks;
 import mindustry.game.EventType;
+import mindustry.gen.Call;
+import mindustry.gen.Iconc;
 import mindustry.net.Administration;
 import mindustry.world.Tile;
 
@@ -43,6 +45,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
     private final IntSet towerPassableFloors = new IntSet();
+    private final IntSet towerBlockWhitelist = new IntSet();
 
     @EventHandler
     void onServerLoadEvent(final EventType.ServerLoadEvent event) {
@@ -71,14 +74,15 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     @PlayerActionHandler
     boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
-        if (action.type != Administration.ActionType.placeBlock) {
+        if (action.type != Administration.ActionType.placeBlock || towerBlockWhitelist.contains(action.block.id)) {
             return true;
         }
         final var covered = new IntSet();
         action.tile.getLinkedTilesAs(action.block, tile -> covered.add(tile.floor().id));
         final var iterator = covered.iterator();
         while (iterator.hasNext) {
-            if (this.towerPassableFloors.contains(iterator.next())) {
+            if (towerPassableFloors.contains(iterator.next())) {
+                Call.label(action.player.con, "[scarlet]" + Iconc.cancel, 1F, action.tile.x * 8f, action.tile.y * 8f);
                 return false;
             }
         }

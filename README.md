@@ -11,6 +11,16 @@ This plugin requires :
 
 - Mindustry v149 or above.
 
+## Config
+
+```yml
+mitosis: The number of offspring an unit produces on death (0 for none, 1+ to enable).
+unit-bind: If logic unit-bind is allowed.
+health-multiplier: The amount enemy health is increased per minute.
+block-whitelist: The blocks allowed to be build on the tower defense path.
+drops: The unit drops. See config.yaml for details.
+```
+
 ## Building
 
 - `./gradlew shadowJar` to compile the plugin into a usable jar (will be located
