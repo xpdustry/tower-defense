@@ -25,14 +25,17 @@
  */
 package com.xpdustry.tower;
 
+import com.xpdustry.tower.config.SealedConfig;
 import java.util.List;
 import mindustry.type.Item;
 import mindustry.type.ItemSeq;
 
+@SealedConfig(def = "simple")
 public sealed interface TowerDrop {
 
     void apply(final ItemSeq items);
 
+    @SealedConfig(name = "simple")
     record Simple(Item item, int amount) implements TowerDrop {
 
         public Simple {
@@ -45,20 +48,21 @@ public sealed interface TowerDrop {
         }
     }
 
-    record Random(List<TowerDrop> drops) implements TowerDrop {
+    @SealedConfig(name = "random")
+    record Random(List<TowerDrop> items) implements TowerDrop {
 
         private static final java.util.Random RANDOM = new java.util.Random();
 
-        public Random(final List<TowerDrop> drops) {
-            if (drops.isEmpty()) {
+        public Random(final List<TowerDrop> items) {
+            if (items.isEmpty()) {
                 throw new IllegalArgumentException("The drop list is empty");
             }
-            this.drops = List.copyOf(drops);
+            this.items = List.copyOf(items);
         }
 
         @Override
         public void apply(final ItemSeq items) {
-            this.drops.get(RANDOM.nextInt(this.drops.size())).apply(items);
+            this.items.get(RANDOM.nextInt(this.items.size())).apply(items);
         }
     }
 }

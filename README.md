@@ -7,9 +7,9 @@
 
 This plugin requires :
 
-- Java 17 or above.
+- Java 21 or above.
 
-- Mindustry v146 or above.
+- Mindustry v149 or above.
 
 ## Building
 

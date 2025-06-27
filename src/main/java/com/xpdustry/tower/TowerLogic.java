@@ -40,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.zip.InflaterInputStream;
 import mindustry.Vars;
 import mindustry.content.Fx;
@@ -162,15 +163,16 @@ final class TowerLogic implements PluginListener {
         final var data = this.config.get().units().get(event.unit.type());
         if (data == null) return;
 
-        for (final var drop : data.drops()) drop.apply(items);
+        final var drops = Objects.requireNonNull(this.config.get().drops().get(data.drop()));
+        for (final var drop : drops) drop.apply(items);
 
         final var core = Vars.state.rules.defaultTeam.core();
         if (core != null) core.items.add(items);
 
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
-        if (this.config.get().mitosis() && data.downgrade() != null) {
-            final var unit = data.downgrade().create(Vars.state.rules.waveTeam);
+        if (this.config.get().mitosis() && data.downgrade().isPresent()) {
+            final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
             unit.set(event.unit.x(), event.unit.y());
             unit.rotation(event.unit.rotation());
             unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));

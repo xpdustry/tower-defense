@@ -46,7 +46,8 @@ dependencies {
     compileOnlyApi(libs.jspecify)
     annotationProcessor(libs.nullaway)
     errorprone(libs.errorprone.core)
-    implementation(libs.configurate.yaml)
+    implementation(libs.gestalt.core)
+    implementation(libs.snakeyaml)
 }
 
 signing {
@@ -57,8 +58,8 @@ signing {
 
 indra {
     javaVersions {
-        target(17)
-        minimumToolchain(17)
+        target(21)
+        minimumToolchain(21)
     }
 
     publishSnapshotsTo("xpdustry", "https://maven.xpdustry.com/snapshots")
@@ -111,12 +112,10 @@ tasks.shadowJar {
     archiveClassifier = "plugin"
     from(generateMetadataFile)
     from(rootProject.file("LICENSE.md")) { into("META-INF") }
-    relocate("com.xpdustry.distributor.api.command.lamp")
-    relocate("revxrsal.commands")
-    relocate("org.spongepowered.configurate")
     relocate("org.yaml.snakeyaml")
-    relocate("io.leangen.geantyref")
+    relocate("org.github.gestalt")
     minimize()
+    mergeServiceFiles()
 }
 
 tasks.register<Copy>("release") {
