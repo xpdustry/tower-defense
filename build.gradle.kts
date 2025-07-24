@@ -1,4 +1,5 @@
 import com.xpdustry.toxopid.extension.anukeXpdustry
+import com.xpdustry.toxopid.extension.anukeZelaux
 import com.xpdustry.toxopid.spec.ModMetadata
 import com.xpdustry.toxopid.spec.ModPlatform
 import com.xpdustry.toxopid.task.GithubAssetDownload
@@ -29,6 +30,7 @@ toxopid {
 repositories {
     mavenCentral()
     anukeXpdustry()
+    anukeZelaux()
     maven("https://maven.xpdustry.com/releases") {
         name = "xpdustry-releases"
         mavenContent { releasesOnly() }
