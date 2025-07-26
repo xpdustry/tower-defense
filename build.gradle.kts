@@ -1,5 +1,4 @@
 import com.xpdustry.toxopid.extension.anukeXpdustry
-import com.xpdustry.toxopid.extension.anukeZelaux
 import com.xpdustry.toxopid.spec.ModMetadata
 import com.xpdustry.toxopid.spec.ModPlatform
 import com.xpdustry.toxopid.task.GithubAssetDownload
@@ -30,7 +29,6 @@ toxopid {
 repositories {
     mavenCentral()
     anukeXpdustry()
-    anukeZelaux()
     maven("https://maven.xpdustry.com/releases") {
         name = "xpdustry-releases"
         mavenContent { releasesOnly() }
@@ -138,7 +136,7 @@ tasks.withType<JavaCompile> {
 val downloadSlf4md by tasks.registering(GithubAssetDownload::class) {
     owner = "xpdustry"
     repo = "slf4md"
-    asset = "slf4md-simple.jar"
+    asset = "slf4md.jar"
     version = "v${libs.versions.slf4md.get()}"
 }
 

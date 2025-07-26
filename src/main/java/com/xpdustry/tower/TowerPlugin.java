@@ -40,17 +40,11 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
             PluginAnnotationProcessor.triggers(this),
             PluginAnnotationProcessor.playerActions(this));
 
-    private final TowerConfigProvider config = new TowerConfigProvider(this);
-
     @Override
     public void onInit() {
-        try {
-            this.config.reload();
-        } catch (final Exception e) {
-            throw new RuntimeException("Failed to load TD", e);
-        }
-        this.addListener(this.config);
-        this.addListener(new TowerLogic(this.config));
+        final var config = new TowerConfigProvider(this);
+        this.addListener(config);
+        this.addListener(new TowerLogic(config));
         final var pathfinder = new TowerPathfinder();
         Vars.pathfinder = pathfinder;
         this.addListener(pathfinder);
