@@ -7,7 +7,7 @@ spotless = "7.0.4"
 errorprone-gradle = "4.3.0"
 
 # utilities
-slf4md = "1.0.4"
+slf4md = "1.1.1"
 distributor = "4.2.0"
 snakeyaml = "2.4"
 gestalt = "0.35.8"
@@ -22,7 +22,6 @@ jspecify = "1.0.0"
 distributor-api = { module = "com.xpdustry:distributor-common-api", version.ref = "distributor" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml"}
 gestalt-core = { module = "com.github.gestalt-config:gestalt-core", version.ref = "gestalt" }
-gestalt-yaml = { module = "com.github.gestalt-config:gestalt-yaml", version.ref = "gestalt" }
 
 # static analysis
 nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }

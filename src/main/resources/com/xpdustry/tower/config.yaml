@@ -1,11 +1,11 @@
 health-multiplier: 1.03
 mitosis: 2
 unit-bind: false
+
 block-whitelist:
   - shock-mine
 
 drops:
-
   serpulo-tier1-drop:
     - item: "copper"
       amount: 20

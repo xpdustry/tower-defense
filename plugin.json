@@ -6,7 +6,7 @@
   "author": "xpdustry",
   "repo": "xpdustry/tower-defense",
   "main": "com.xpdustry.tower.TowerPlugin",
-  "minGameVersion": "149",
+  "minGameVersion": "150",
   "java": true,
   "hidden": true,
   "dependencies": ["distributor-common", "slf4md"]

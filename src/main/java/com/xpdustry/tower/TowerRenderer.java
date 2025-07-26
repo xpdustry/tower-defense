@@ -99,7 +99,7 @@ final class TowerRenderer implements PluginListener {
         }
         if (closest.isEmpty()) {
             final var wrapper = new LabelWrapper();
-            wrapper.label.flags((byte) (WorldLabel.flagBackground | WorldLabel.flagOutline));
+            wrapper.label.flags = (byte) (WorldLabel.flagBackground | WorldLabel.flagOutline);
             wrapper.label.fontSize = 2F;
             wrapper.update(event);
             wrappers.add(wrapper);
@@ -138,7 +138,7 @@ final class TowerRenderer implements PluginListener {
         void update(final EnemyDropEvent event) {
             label.set(event.x(), event.y());
             items.add(event.items());
-            label.text(ComponentStringBuilder.mindustry(KeyContainer.empty())
+            label.text = ComponentStringBuilder.mindustry(KeyContainer.empty())
                     .append(components()
                             .modify(builder -> {
                                 final var color = ComponentColor.from(Vars.state.rules.defaultTeam.color);
@@ -151,7 +151,7 @@ final class TowerRenderer implements PluginListener {
                                 });
                             })
                             .build())
-                    .toString());
+                    .toString();
             label.add();
             lastUpdate = System.currentTimeMillis();
         }
