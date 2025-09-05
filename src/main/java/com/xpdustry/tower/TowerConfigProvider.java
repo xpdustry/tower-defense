@@ -47,7 +47,6 @@ import org.github.gestalt.config.node.ConfigNode;
 import org.github.gestalt.config.node.MapNode;
 import org.github.gestalt.config.path.mapper.KebabCasePathMapper;
 import org.github.gestalt.config.reflect.TypeCapture;
-import org.github.gestalt.config.source.ClassPathConfigSourceBuilder;
 import org.github.gestalt.config.source.EnvironmentConfigSourceBuilder;
 import org.github.gestalt.config.source.FileConfigSourceBuilder;
 import org.github.gestalt.config.tag.Tags;
@@ -91,6 +90,13 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
 
     void reload() throws Exception {
         final var file = this.plugin.getDirectory().resolve("config.yaml");
+        if (Files.notExists(file)) {
+            try (final var stream = Objects.requireNonNull(
+                    this.getClass().getClassLoader().getResourceAsStream("com/xpdustry/tower/config.yaml"))) {
+                Files.copy(stream, file);
+            }
+        }
+
         final var builder = new GestaltBuilder()
                 .addSource(FileConfigSourceBuilder.builder().setPath(file).build())
                 .addSource(EnvironmentConfigSourceBuilder.builder()
@@ -106,17 +112,14 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
                 .addDecoder(new MapDecoder())
                 .addDecoder(new BooleanDecoder())
                 .addDecoder(new ListDecoder())
+                .addDecoder(new SetDecoder())
                 .addDecoder(new IntegerDecoder())
                 .addDecoder(new OptionalDecoder())
                 .addDecoder(new SealedConfigDecoder());
         for (final var key : CTypeKey.ALL) {
             builder.addDecoder(new MindustryContentDecoder<>(key));
         }
-        if (Files.notExists(file)) {
-            builder.addSource(ClassPathConfigSourceBuilder.builder()
-                    .setResource("com/xpdustry/tower/config.yaml")
-                    .build());
-        }
+
         final var gestalt = builder.build();
         gestalt.loadConfigs();
         this.config = gestalt.getConfig("", TowerConfig.class);

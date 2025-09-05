@@ -136,7 +136,7 @@ tasks.withType<JavaCompile> {
 val downloadSlf4md by tasks.registering(GithubAssetDownload::class) {
     owner = "xpdustry"
     repo = "slf4md"
-    asset = "slf4md-simple.jar"
+    asset = "slf4md.jar"
     version = "v${libs.versions.slf4md.get()}"
 }
 
