@@ -29,7 +29,6 @@ import arc.graphics.Color;
 import arc.struct.IntMap;
 import arc.struct.IntSet;
 import arc.struct.Seq;
-import arc.util.CommandHandler;
 import arc.util.Interval;
 import arc.util.Time;
 import arc.util.Tmp;
@@ -41,14 +40,13 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+import com.xpdustry.distributor.api.util.Priority;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.InflaterInputStream;
-
-import com.xpdustry.distributor.api.util.Priority;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
@@ -82,7 +80,8 @@ final class TowerLogic implements PluginListener {
     private final MindustryPlugin plugin;
     private final IntMap<Interval> messageRateLimits = new IntMap<>();
 
-    public TowerLogic(final TowerConfigProvider config, final TowerPathfinder pathfinder, final MindustryPlugin plugin) {
+    public TowerLogic(
+            final TowerConfigProvider config, final TowerPathfinder pathfinder, final MindustryPlugin plugin) {
         this.config = config;
         this.pathfinder = pathfinder;
         this.plugin = plugin;
@@ -130,7 +129,12 @@ final class TowerLogic implements PluginListener {
     */
 
     void onGameStart() {
-        Distributor.get().getEventBus().post(new PowerIncreaseEvent.Health(Vars.state.rules.waveTeam, Vars.state.rules.unitHealthMultiplier, this.config.get().initialHealthMultiplier()));
+        Distributor.get()
+                .getEventBus()
+                .post(new PowerIncreaseEvent.Health(
+                        Vars.state.rules.waveTeam,
+                        Vars.state.rules.unitHealthMultiplier,
+                        this.config.get().initialHealthMultiplier()));
         Vars.state.rules.unitHealthMultiplier = this.config.get().initialHealthMultiplier();
         Call.setRules(Vars.state.rules);
     }
@@ -145,9 +149,8 @@ final class TowerLogic implements PluginListener {
         return switch (action.type) {
             case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
             case placeBlock -> hasNoNearbyCore(action.block, action.tile, action.player);
-            case dropPayload ->
-                !(action.payload.content() instanceof Block block)
-                        || hasNoNearbyCore(block, action.tile, action.player);
+            case dropPayload -> !(action.payload.content() instanceof Block block)
+                    || hasNoNearbyCore(block, action.tile, action.player);
             default -> true;
         };
     }
@@ -241,7 +244,8 @@ final class TowerLogic implements PluginListener {
                 final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
                 Tmp.v1.rnd(Vars.tilesize * 2);
                 // Ensure the unit spawns on the path instead of outside it
-                Seq<Float> position = findNearestValidSpawn(event.unit.x(), event.unit.y(), pathfinder.towerPassableFloors, 25);
+                Seq<Float> position =
+                        findNearestValidSpawn(event.unit.x(), event.unit.y(), pathfinder.towerPassableFloors, 25);
                 unit.set(position.get(0) + Tmp.v1.x, position.get(1) + Tmp.v1.y);
                 unit.rotation(event.unit.rotation());
                 unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
@@ -287,7 +291,7 @@ final class TowerLogic implements PluginListener {
     private Seq<Float> findNearestValidSpawn(float x, float y, IntSet validFloors, int maxSearchRadius) {
         float startTileX = x / Vars.tilesize;
         float startTileY = y / Vars.tilesize;
-        Tile startTile = Vars.world.tile((int)startTileX, (int)startTileY);
+        Tile startTile = Vars.world.tile((int) startTileX, (int) startTileY);
         if (startTile != null && validFloors.contains(startTile.floor().id)) {
             return Seq.with(startTile.worldx(), startTile.worldy());
         }
@@ -315,7 +319,7 @@ final class TowerLogic implements PluginListener {
     }
 
     private boolean checkTile(float tileX, float tileY, IntSet validFloors) {
-        Tile tile = Vars.world.tile((int)tileX, (int)tileY);
+        Tile tile = Vars.world.tile((int) tileX, (int) tileY);
         return tile != null && validFloors.contains(tile.floor().id) && tile.block() == Blocks.air;
     }
 }
