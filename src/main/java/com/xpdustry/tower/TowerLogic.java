@@ -78,6 +78,7 @@ final class TowerLogic implements PluginListener {
     @Override
     public void onPluginInit() {
         // TODO Store modifications somewhere to not make these changes permanent
+        // You removed the undo-ing on exit >:(
 
         // Make sure all enemy units are targetable and hittable and count to waves
         UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
