@@ -47,11 +47,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.InflaterInputStream;
+
+import com.xpdustry.distributor.api.util.Priority;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.core.GameState;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Groups;
@@ -111,7 +114,11 @@ final class TowerLogic implements PluginListener {
         UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
         UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
 
-
+        Distributor.get().getEventBus().subscribe(EventType.StateChangeEvent.class, Priority.HIGH, plugin, event -> {
+            if (event.from == GameState.State.menu && event.to == GameState.State.playing) {
+                onGameStart();
+            }
+        });
     }
     /* TODO: Finish me, move imperium wave skip command to this
     @Override
@@ -121,6 +128,12 @@ final class TowerLogic implements PluginListener {
         });
     }
     */
+
+    void onGameStart() {
+        Distributor.get().getEventBus().post(new PowerIncreaseEvent.Health(Vars.state.rules.waveTeam, Vars.state.rules.unitHealthMultiplier, this.config.get().initialHealthMultiplier()));
+        Vars.state.rules.unitHealthMultiplier = this.config.get().initialHealthMultiplier();
+        Call.setRules(Vars.state.rules);
+    }
 
     @EventHandler
     void onPlayerQuit(final EventType.PlayerLeave event) {
