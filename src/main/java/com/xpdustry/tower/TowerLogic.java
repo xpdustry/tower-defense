@@ -27,6 +27,9 @@ package com.xpdustry.tower;
 
 import arc.graphics.Color;
 import arc.struct.IntMap;
+import arc.struct.IntSet;
+import arc.struct.Seq;
+import arc.util.CommandHandler;
 import arc.util.Interval;
 import arc.util.Time;
 import arc.util.Tmp;
@@ -35,6 +38,7 @@ import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.annotation.TaskHandler;
 import com.xpdustry.distributor.api.component.style.ComponentColor;
+import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
 import java.io.ByteArrayInputStream;
@@ -44,11 +48,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.InflaterInputStream;
 import mindustry.Vars;
+import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
+import mindustry.gen.Groups;
 import mindustry.gen.Iconc;
 import mindustry.gen.Player;
 import mindustry.logic.LAssembler;
@@ -69,10 +75,14 @@ final class TowerLogic implements PluginListener {
 
     private static final Logger logger = LoggerFactory.getLogger(TowerLogic.class);
     private final TowerConfigProvider config;
+    private final TowerPathfinder pathfinder;
+    private final MindustryPlugin plugin;
     private final IntMap<Interval> messageRateLimits = new IntMap<>();
 
-    public TowerLogic(final TowerConfigProvider config) {
+    public TowerLogic(final TowerConfigProvider config, final TowerPathfinder pathfinder, final MindustryPlugin plugin) {
         this.config = config;
+        this.pathfinder = pathfinder;
+        this.plugin = plugin;
     }
 
     @Override
@@ -100,7 +110,17 @@ final class TowerLogic implements PluginListener {
         UnitTypes.toxopid.legSplashDamage = UnitTypes.toxopid.legSplashRange = 0;
         UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
         UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
+
+
     }
+    /* TODO: Finish me, move imperium wave skip command to this
+    @Override
+    public void onPluginServerCommandsRegistration(CommandHandler handler) {
+        handler.register("waveskip", "Skip waves.", args -> {
+            // stuff
+        });
+    }
+    */
 
     @EventHandler
     void onPlayerQuit(final EventType.PlayerLeave event) {
@@ -207,7 +227,9 @@ final class TowerLogic implements PluginListener {
             for (int i = 0; i < this.config.get().mitosis(); i++) {
                 final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
                 Tmp.v1.rnd(Vars.tilesize * 2);
-                unit.set(event.unit.x() + Tmp.v1.x, event.unit.y() + Tmp.v1.y);
+                // Ensure the unit spawns on the path instead of outside it
+                Seq<Float> position = findNearestValidSpawn(event.unit.x(), event.unit.y(), pathfinder.towerPassableFloors, 25);
+                unit.set(position.get(0) + Tmp.v1.x, position.get(1) + Tmp.v1.y);
                 unit.rotation(event.unit.rotation());
                 unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
                 unit.controller(new TowerAI());
@@ -220,6 +242,8 @@ final class TowerLogic implements PluginListener {
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
     void onEnemyHealthMultiply() {
         if (!Vars.state.isPlaying()) return;
+        // Don't increase health multi if there are no units on alive
+        if (Groups.unit.find(u -> u.team == Vars.state.rules.waveTeam && !u.dead()) == null) return;
         final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
         final var next = prev * this.config.get().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
@@ -245,5 +269,40 @@ final class TowerLogic implements PluginListener {
     private boolean hasCoreBlock(final Tile tile) {
         return (tile.block() instanceof CoreBlock
                 || (tile.build instanceof StorageBlock.StorageBuild build && build.linkedCore != null));
+    }
+
+    private Seq<Float> findNearestValidSpawn(float x, float y, IntSet validFloors, int maxSearchRadius) {
+        float startTileX = x / Vars.tilesize;
+        float startTileY = y / Vars.tilesize;
+        Tile startTile = Vars.world.tile((int)startTileX, (int)startTileY);
+        if (startTile != null && validFloors.contains(startTile.floor().id)) {
+            return Seq.with(startTile.worldx(), startTile.worldy());
+        }
+        for (int radius = 1; radius <= maxSearchRadius; radius++) {
+            for (int i = -radius; i <= radius; i++) {
+                if (checkTile(startTileX + i, startTileY + radius, validFloors)) {
+                    return Seq.with((startTileX + i) * Vars.tilesize, (startTileY + radius) * Vars.tilesize);
+                }
+                if (checkTile(startTileX + i, startTileY - radius, validFloors)) {
+                    return Seq.with((startTileX + i) * Vars.tilesize, (startTileY - radius) * Vars.tilesize);
+                }
+
+                if (i > -radius && i < radius) {
+                    if (checkTile(startTileX + radius, startTileY + i, validFloors)) {
+                        return Seq.with((startTileX + radius) * Vars.tilesize, (startTileY + i) * Vars.tilesize);
+                    }
+                    if (checkTile(startTileX - radius, startTileY + i, validFloors)) {
+                        return Seq.with((startTileX - radius) * Vars.tilesize, (startTileY + i) * Vars.tilesize);
+                    }
+                }
+            }
+        }
+
+        return Seq.with(x, y);
+    }
+
+    private boolean checkTile(float tileX, float tileY, IntSet validFloors) {
+        Tile tile = Vars.world.tile((int)tileX, (int)tileY);
+        return tile != null && validFloors.contains(tile.floor().id) && tile.block() == Blocks.air;
     }
 }

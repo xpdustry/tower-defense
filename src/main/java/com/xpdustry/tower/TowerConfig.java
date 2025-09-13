@@ -34,6 +34,7 @@ import mindustry.world.Block;
 import org.github.gestalt.config.annotations.Config;
 
 public record TowerConfig(
+        float initialHealthMultiplier,
         float healthMultiplier,
         int mitosis,
         @Config(path = "unit-bind") boolean ubind,
@@ -41,6 +42,9 @@ public record TowerConfig(
         Map<String, List<TowerDrop>> drops,
         Map<UnitType, UnitData> units) {
     public TowerConfig {
+        if (initialHealthMultiplier <= 0F) {
+            throw new IllegalArgumentException("initial-health must be higher than 0");
+        }
         if (healthMultiplier < 1F) {
             throw new IllegalArgumentException("health-multiplier can't be lower than 1");
         }

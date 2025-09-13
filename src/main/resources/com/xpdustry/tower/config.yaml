@@ -1,4 +1,5 @@
-health-multiplier: 1.03
+initial-health-multiplier: 0.5
+health-multiplier: 1.02
 mitosis: 2
 unit-bind: false
 
@@ -124,7 +125,7 @@ drops:
 
   erekir-tier1-drop:
     - item: "beryllium"
-      amount: 20
+      amount: 30
     - item: "graphite"
       amount: 20
     - item: "silicon"
@@ -140,7 +141,7 @@ drops:
 
   erekir-tier2-drop:
     - item: "beryllium"
-      amount: 35
+      amount: 55
     - item: "graphite"
       amount: 35
     - item: "silicon"
@@ -150,7 +151,7 @@ drops:
     - type: "random"
       items:
         - item: "beryllium"
-          amount: 20
+          amount: 30
         - item: "tungsten"
           amount: 15
         - item: "oxide"
@@ -158,7 +159,7 @@ drops:
 
   erekir-tier3-drop:
     - item: "beryllium"
-      amount: 50
+      amount: 80
     - item: "graphite"
       amount: 50
     - item: "silicon"
@@ -172,7 +173,7 @@ drops:
     - type: "random"
       items:
         - item: "beryllium"
-          amount: 30
+          amount: 50
         - item: "tungsten"
           amount: 25
         - item: "thorium"
@@ -222,7 +223,7 @@ drops:
     - item: "tungsten"
       amount: 100
     - item: "thorium"
-      amount: 60
+      amount: 80
     - item: "oxide"
       amount: 150
     - item: "surge-alloy"
@@ -427,7 +428,7 @@ units:
     drop: "serpulo-tier3-drop"
     downgrade: "beta"
 
-  # Latum Tree - TODO: Remove in v8?
+  # Latum Tree - TODO: Remove in v9?
   renale:
     drop: "erekir-tier2-drop"
   latum:

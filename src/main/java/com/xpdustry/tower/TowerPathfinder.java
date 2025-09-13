@@ -45,7 +45,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
-    private final IntSet towerPassableFloors = new IntSet();
+    public final IntSet towerPassableFloors = new IntSet();
     private final IntSet towerBlockWhitelist = new IntSet();
 
     @EventHandler
@@ -76,7 +76,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     @PlayerActionHandler
     boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
         if (action.type == Administration.ActionType.placeBlock || action.type == Administration.ActionType.dropPayload) {
-            Block block = action.block != null ? action.block : action.payload instanceof Block b ? b : Blocks.air;
+            Block block = action.block != null ? action.block : action.payload.content() instanceof Block b ? b : Blocks.air;
             if (towerBlockWhitelist.contains(block.id) || block == Blocks.air) return true;
             final var covered = new IntSet();
             action.tile.getLinkedTilesAs(action.block, tile -> covered.add(tile.floor().id));
