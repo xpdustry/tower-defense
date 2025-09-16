@@ -14,7 +14,7 @@ gestalt = "0.35.8"
 
 # static analysis
 errorprone-core = "2.39.0"
-nullaway = "0.12.7"
+nullaway = "0.12.10"
 jspecify = "1.0.0"
 
 [libraries]
