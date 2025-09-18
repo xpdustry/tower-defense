@@ -149,8 +149,9 @@ final class TowerLogic implements PluginListener {
         return switch (action.type) {
             case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
             case placeBlock -> hasNoNearbyCore(action.block, action.tile, action.player);
-            case dropPayload -> !(action.payload.content() instanceof Block block)
-                    || hasNoNearbyCore(block, action.tile, action.player);
+            case dropPayload ->
+                !(action.payload.content() instanceof Block block)
+                        || hasNoNearbyCore(block, action.tile, action.player);
             default -> true;
         };
     }

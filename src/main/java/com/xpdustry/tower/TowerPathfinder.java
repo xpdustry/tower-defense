@@ -40,7 +40,6 @@ import mindustry.gen.Iconc;
 import mindustry.net.Administration;
 import mindustry.world.Block;
 import mindustry.world.Tile;
-import org.slf4j.Logger;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
