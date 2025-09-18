@@ -40,6 +40,7 @@ import mindustry.gen.Iconc;
 import mindustry.net.Administration;
 import mindustry.world.Block;
 import mindustry.world.Tile;
+import org.slf4j.Logger;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
 
@@ -70,6 +71,15 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
             if (tile.overlay().equals(Blocks.spawn)) {
                 this.towerPassableFloors.add(tile.floor().id);
             }
+        }
+    }
+
+    public void updateConfiguration(final TowerConfig config) {
+        this.towerBlockWhitelist.clear();
+        final var newWhitelist = config.blockWhitelist();
+
+        for (final Block block : newWhitelist) {
+            this.towerBlockWhitelist.add(block.id);
         }
     }
 

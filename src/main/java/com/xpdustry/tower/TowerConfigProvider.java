@@ -56,10 +56,12 @@ import org.jspecify.annotations.Nullable;
 final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig> {
 
     private final MindustryPlugin plugin;
+    private final TowerPathfinder pathfinder;
     private @Nullable TowerConfig config = null;
 
-    public TowerConfigProvider(final MindustryPlugin plugin) {
+    public TowerConfigProvider(final MindustryPlugin plugin, final TowerPathfinder pathfinder) {
         this.plugin = plugin;
+        this.pathfinder = pathfinder;
     }
 
     @Override
@@ -123,6 +125,7 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
         final var gestalt = builder.build();
         gestalt.loadConfigs();
         this.config = gestalt.getConfig("", TowerConfig.class);
+        this.pathfinder.updateConfiguration(this.config);
     }
 
     static final class MindustryContentDecoder<T extends MappableContent> extends LeafDecoder<T> {

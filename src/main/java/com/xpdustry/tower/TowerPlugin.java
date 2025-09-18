@@ -42,10 +42,10 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
 
     @Override
     public void onInit() {
-        final var config = new TowerConfigProvider(this);
-        this.addListener(config);
         final var pathfinder = new TowerPathfinder();
         Vars.pathfinder = pathfinder;
+        final var config = new TowerConfigProvider(this, pathfinder);
+        this.addListener(config);
         this.addListener(new TowerLogic(config, pathfinder, this));
         this.addListener(pathfinder);
         this.addListener(new TowerRenderer());
