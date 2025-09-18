@@ -127,9 +127,9 @@ drops:
     - item: "beryllium"
       amount: 30
     - item: "graphite"
-      amount: 20
-    - item: "silicon"
       amount: 10
+    - item: "silicon"
+      amount: 15
     - type: "random"
       items:
         - item: "beryllium"
@@ -138,16 +138,18 @@ drops:
           amount: 10
         - item: "tungsten"
           amount: 5
+        - item: "oxide"
+          amount: 10
 
   erekir-tier2-drop:
     - item: "beryllium"
       amount: 55
     - item: "graphite"
-      amount: 35
+      amount: 25
     - item: "silicon"
-      amount: 20
+      amount: 25
     - item: "tungsten"
-      amount: 10
+      amount: 20
     - type: "random"
       items:
         - item: "beryllium"
@@ -161,13 +163,13 @@ drops:
     - item: "beryllium"
       amount: 80
     - item: "graphite"
-      amount: 50
+      amount: 40
     - item: "silicon"
-      amount: 30
+      amount: 35
     - item: "tungsten"
-      amount: 30
+      amount: 60
     - item: "oxide"
-      amount: 30
+      amount: 50
     - item: "thorium"
       amount: 15
     - type: "random"
@@ -177,9 +179,9 @@ drops:
         - item: "tungsten"
           amount: 25
         - item: "thorium"
-          amount: 30
+          amount: 35
         - item: "surge-alloy"
-          amount: 50
+          amount: 55
         - item: "carbide"
           amount: 50
 
@@ -187,9 +189,9 @@ drops:
     - item: "beryllium"
       amount: 250
     - item: "graphite"
-      amount: 250
+      amount: 150
     - item: "silicon"
-      amount: 200
+      amount: 250
     - item: "tungsten"
       amount: 100
     - item: "oxide"
@@ -217,9 +219,9 @@ drops:
     - item: "beryllium"
       amount: 400
     - item: "graphite"
-      amount: 400
+      amount: 300
     - item: "silicon"
-      amount: 200
+      amount: 250
     - item: "tungsten"
       amount: 100
     - item: "thorium"
@@ -237,7 +239,7 @@ drops:
         - item: "oxide"
           amount: 80
         - item: "surge-alloy"
-          amount: 40
+          amount: 50
         - item: "carbide"
           amount: 60
         - item: "phase-fabric"
