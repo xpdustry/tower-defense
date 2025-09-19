@@ -113,6 +113,11 @@ final class TowerLogic implements PluginListener {
         UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
         UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
 
+        // No crush damage
+        UnitTypes.vanquish.crushDamage = 0;
+        UnitTypes.conquer.crushDamage = 0;
+        // latum and renale also have it but it is their only form of damage and wont be removed
+
         Distributor.get().getEventBus().subscribe(EventType.StateChangeEvent.class, Priority.HIGH, plugin, event -> {
             if (event.from == GameState.State.menu && event.to == GameState.State.playing) {
                 onGameStart();
