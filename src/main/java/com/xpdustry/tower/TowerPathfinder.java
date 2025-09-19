@@ -90,7 +90,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
                     action.block != null ? action.block : action.payload.content() instanceof Block b ? b : Blocks.air;
             if (towerBlockWhitelist.contains(block.id) || block == Blocks.air) return true;
             final var covered = new IntSet();
-            action.tile.getLinkedTilesAs(action.block, tile -> covered.add(tile.floor().id));
+            action.tile.getLinkedTilesAs(block, tile -> covered.add(tile.floor().id));
             final var iterator = covered.iterator();
             while (iterator.hasNext) {
                 if (towerPassableFloors.contains(iterator.next())) {
