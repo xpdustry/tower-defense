@@ -243,7 +243,7 @@ final class TowerLogic implements PluginListener {
         if (data.downgrade().isPresent()) {
             for (int i = 0; i < this.config.get().mitosis(); i++) {
                 final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
-                Tmp.v1.rnd(Vars.tilesize * 2);
+                Tmp.v1.rnd(4); // 1 is enough for hitbox collision, 4 ensures they don't leave the tile
                 // Ensure the unit spawns on the path instead of outside it
                 Seq<Float> position =
                         findNearestValidSpawn(event.unit.x(), event.unit.y(), pathfinder.towerPassableFloors, 25);
