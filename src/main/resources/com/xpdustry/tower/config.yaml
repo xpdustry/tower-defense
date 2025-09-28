@@ -1,4 +1,4 @@
-initial-health-multiplier: 0.5
+initial-health-multiplier: 1.0
 health-multiplier: 1.02
 mitosis: 2
 unit-bind: false

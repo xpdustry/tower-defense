@@ -25,36 +25,6 @@
  */
 package com.xpdustry.tower;
 
-import com.xpdustry.distributor.api.annotation.PluginAnnotationProcessor;
-import com.xpdustry.distributor.api.plugin.AbstractMindustryPlugin;
-import com.xpdustry.distributor.api.plugin.PluginListener;
-import java.util.List;
-import mindustry.Vars;
-
-@SuppressWarnings("unused")
-public final class TowerPlugin extends AbstractMindustryPlugin {
-
-    private final PluginAnnotationProcessor<List<Object>> processor = PluginAnnotationProcessor.compose(
-            PluginAnnotationProcessor.events(this),
-            PluginAnnotationProcessor.tasks(this),
-            PluginAnnotationProcessor.triggers(this),
-            PluginAnnotationProcessor.playerActions(this));
-
-    @Override
-    public void onInit() {
-        final var config = new TowerConfigProvider(this);
-        this.addListener(config);
-        this.addListener(new TowerLogic(config));
-        final var pathfinder = new TowerPathfinder(config);
-        Vars.pathfinder = pathfinder;
-        this.addListener(pathfinder);
-        this.addListener(new TowerRenderer());
-        this.addListener(new TowerCommands(this));
-    }
-
-    @Override
-    protected void addListener(final PluginListener listener) {
-        super.addListener(listener);
-        this.processor.process(listener);
-    }
+public enum TowerConfigReloadEvent {
+    INSTANCE
 }

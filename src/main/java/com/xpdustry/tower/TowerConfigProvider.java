@@ -27,6 +27,7 @@ package com.xpdustry.tower;
 
 import arc.util.CommandHandler;
 import arc.util.Strings;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
@@ -56,12 +57,10 @@ import org.jspecify.annotations.Nullable;
 final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig> {
 
     private final MindustryPlugin plugin;
-    private final TowerPathfinder pathfinder;
     private @Nullable TowerConfig config = null;
 
-    public TowerConfigProvider(final MindustryPlugin plugin, final TowerPathfinder pathfinder) {
+    public TowerConfigProvider(final MindustryPlugin plugin) {
         this.plugin = plugin;
-        this.pathfinder = pathfinder;
     }
 
     @Override
@@ -125,7 +124,7 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
         final var gestalt = builder.build();
         gestalt.loadConfigs();
         this.config = gestalt.getConfig("", TowerConfig.class);
-        this.pathfinder.updateConfiguration(this.config);
+        Distributor.get().getEventBus().post(TowerConfigReloadEvent.INSTANCE);
     }
 
     static final class MindustryContentDecoder<T extends MappableContent> extends LeafDecoder<T> {

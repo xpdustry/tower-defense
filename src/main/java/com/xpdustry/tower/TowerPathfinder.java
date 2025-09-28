@@ -45,8 +45,13 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
-    public final IntSet towerPassableFloors = new IntSet();
+    private final IntSet towerPassableFloors = new IntSet();
     private final IntSet towerBlockWhitelist = new IntSet();
+    private final TowerConfigProvider config;
+
+    public TowerPathfinder(final TowerConfigProvider config) {
+        this.config = config;
+    }
 
     @EventHandler
     void onServerLoadEvent(final EventType.ServerLoadEvent event) {
@@ -73,11 +78,10 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
         }
     }
 
-    public void updateConfiguration(final TowerConfig config) {
+    @EventHandler
+    void onConfigUpdate(final TowerConfigReloadEvent event) {
         this.towerBlockWhitelist.clear();
-        final var newWhitelist = config.blockWhitelist();
-
-        for (final Block block : newWhitelist) {
+        for (final var block : this.config.get().blockWhitelist()) {
             this.towerBlockWhitelist.add(block.id);
         }
     }
@@ -86,9 +90,11 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
         if (action.type == Administration.ActionType.placeBlock
                 || action.type == Administration.ActionType.dropPayload) {
-            Block block =
+            final var block =
                     action.block != null ? action.block : action.payload.content() instanceof Block b ? b : Blocks.air;
-            if (towerBlockWhitelist.contains(block.id) || block == Blocks.air) return true;
+            if (this.towerBlockWhitelist.contains(block.id) || block.id == Blocks.air.id) {
+                return true;
+            }
             final var covered = new IntSet();
             action.tile.getLinkedTilesAs(block, tile -> covered.add(tile.floor().id));
             final var iterator = covered.iterator();
