@@ -108,7 +108,7 @@ final class TowerLogic implements PluginListener {
         // Latum and Renale also have it, but it is their only form of damage and won't be removed
     }
 
-    @EventHandler()
+    @EventHandler
     void onGameStart(final EventType.StateChangeEvent event) {
         if (!(event.from == GameState.State.menu && event.to == GameState.State.playing)) {
             return;
