@@ -1,4 +1,5 @@
-health-multiplier: 1.03
+initial-health-multiplier: 1.0
+health-multiplier: 1.02
 mitosis: 2
 unit-bind: false
 
@@ -8,25 +9,9 @@ block-whitelist:
 drops:
   serpulo-tier1-drop:
     - item: "copper"
-      amount: 20
+      amount: 25
     - item: "lead"
-      amount: 20
-    - item: "silicon"
-      amount: 5
-    - type: "random"
-      items:
-        - item: "graphite"
-          amount: 10
-        - item: "metaglass"
-          amount: 5
-        - item: "titanium"
-          amount: 10
-
-  serpulo-tier2-drop:
-    - item: "copper"
-      amount: 30
-    - item: "lead"
-      amount: 30
+      amount: 25
     - item: "silicon"
       amount: 10
     - type: "random"
@@ -34,21 +19,43 @@ drops:
         - item: "graphite"
           amount: 20
         - item: "metaglass"
-          amount: 10
+          amount: 15
         - item: "titanium"
+          amount: 15
+
+  serpulo-tier2-drop:
+    - item: "copper"
+      amount: 40
+    - item: "lead"
+      amount: 40
+    - item: "silicon"
+      amount: 20
+    - item: "graphite"
+      amount: 20
+    - type: "random"
+      items:
+        - item: "graphite"
           amount: 20
+        - item: "metaglass"
+          amount: 35
+        - item: "titanium"
+          amount: 25
 
   serpulo-tier3-drop:
     - item: "copper"
-      amount: 50
+      amount: 60
     - item: "lead"
-      amount: 50
+      amount: 60
     - item: "silicon"
       amount: 30
-    - item: "phase-fabric"
-      amount: 3
-    - item: "surge-alloy"
-      amount: 3
+    - item: "graphite"
+      amount: 30
+    - item: "titanium"
+      amount: 20
+    - item: "thorium"
+      amount: 10
+    - item: "plastanium"
+      amount: 30
     - type: "random"
       items:
         - item: "graphite"
@@ -57,10 +64,10 @@ drops:
           amount: 20
         - item: "titanium"
           amount: 30
-        - item: "plastanium"
-          amount: 50
-        - item: "thorium"
-          amount: 50
+        - item: "surge-alloy"
+          amount: 10
+        - item: "phase-fabric"
+          amount: 20
 
   serpulo-tier4-drop:
     - item: "copper"
@@ -69,10 +76,14 @@ drops:
       amount: 200
     - item: "silicon"
       amount: 50
-    - item: "phase-fabric"
-      amount: 20
-    - item: "surge-alloy"
+    - item: "titanium"
+      amount: 100
+    - item: "thorium"
       amount: 40
+    - item: "phase-fabric"
+      amount: 30
+    - item: "surge-alloy"
+      amount: 30
     - type: "random"
       items:
         - item: "graphite"
@@ -93,8 +104,10 @@ drops:
       amount: 300
     - item: "silicon"
       amount: 100
+    - item: "thorium"
+      amount: 60
     - item: "phase-fabric"
-      amount: 30
+      amount: 40
     - item: "surge-alloy"
       amount: 60
     - type: "random"
@@ -112,11 +125,11 @@ drops:
 
   erekir-tier1-drop:
     - item: "beryllium"
-      amount: 20
+      amount: 30
     - item: "graphite"
-      amount: 20
-    - item: "silicon"
       amount: 10
+    - item: "silicon"
+      amount: 15
     - type: "random"
       items:
         - item: "beryllium"
@@ -125,20 +138,22 @@ drops:
           amount: 10
         - item: "tungsten"
           amount: 5
+        - item: "oxide"
+          amount: 10
 
   erekir-tier2-drop:
     - item: "beryllium"
-      amount: 35
+      amount: 55
     - item: "graphite"
-      amount: 35
+      amount: 25
     - item: "silicon"
-      amount: 20
+      amount: 25
     - item: "tungsten"
-      amount: 10
+      amount: 20
     - type: "random"
       items:
         - item: "beryllium"
-          amount: 20
+          amount: 30
         - item: "tungsten"
           amount: 15
         - item: "oxide"
@@ -146,27 +161,27 @@ drops:
 
   erekir-tier3-drop:
     - item: "beryllium"
-      amount: 50
+      amount: 80
     - item: "graphite"
-      amount: 50
+      amount: 40
     - item: "silicon"
-      amount: 30
+      amount: 35
     - item: "tungsten"
-      amount: 30
+      amount: 60
     - item: "oxide"
-      amount: 30
+      amount: 50
     - item: "thorium"
       amount: 15
     - type: "random"
       items:
         - item: "beryllium"
-          amount: 30
+          amount: 50
         - item: "tungsten"
           amount: 25
         - item: "thorium"
-          amount: 30
+          amount: 35
         - item: "surge-alloy"
-          amount: 50
+          amount: 55
         - item: "carbide"
           amount: 50
 
@@ -174,9 +189,9 @@ drops:
     - item: "beryllium"
       amount: 250
     - item: "graphite"
-      amount: 250
+      amount: 150
     - item: "silicon"
-      amount: 200
+      amount: 250
     - item: "tungsten"
       amount: 100
     - item: "oxide"
@@ -204,13 +219,13 @@ drops:
     - item: "beryllium"
       amount: 400
     - item: "graphite"
-      amount: 400
+      amount: 300
     - item: "silicon"
-      amount: 200
+      amount: 250
     - item: "tungsten"
       amount: 100
     - item: "thorium"
-      amount: 60
+      amount: 80
     - item: "oxide"
       amount: 150
     - item: "surge-alloy"
@@ -224,7 +239,7 @@ drops:
         - item: "oxide"
           amount: 80
         - item: "surge-alloy"
-          amount: 40
+          amount: 50
         - item: "carbide"
           amount: 60
         - item: "phase-fabric"
@@ -415,7 +430,7 @@ units:
     drop: "serpulo-tier3-drop"
     downgrade: "beta"
 
-  # Latum Tree - TODO: Remove in v8?
+  # Latum Tree - TODO: Remove in v9?
   renale:
     drop: "erekir-tier2-drop"
   latum:

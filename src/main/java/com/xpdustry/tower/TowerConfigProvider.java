@@ -27,6 +27,7 @@ package com.xpdustry.tower;
 
 import arc.util.CommandHandler;
 import arc.util.Strings;
+import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
@@ -123,6 +124,7 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
         final var gestalt = builder.build();
         gestalt.loadConfigs();
         this.config = gestalt.getConfig("", TowerConfig.class);
+        Distributor.get().getEventBus().post(TowerConfigReloadEvent.INSTANCE);
     }
 
     static final class MindustryContentDecoder<T extends MappableContent> extends LeafDecoder<T> {

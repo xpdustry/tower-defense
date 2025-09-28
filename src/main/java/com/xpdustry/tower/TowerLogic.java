@@ -47,6 +47,7 @@ import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.core.GameState;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
 import mindustry.gen.Iconc;
@@ -78,6 +79,7 @@ final class TowerLogic implements PluginListener {
     @Override
     public void onPluginInit() {
         // TODO Store modifications somewhere to not make these changes permanent
+        // You removed the undo-ing on exit >:(
 
         // Make sure all enemy units are targetable and hittable and count to waves
         UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
@@ -99,6 +101,22 @@ final class TowerLogic implements PluginListener {
         UnitTypes.toxopid.legSplashDamage = UnitTypes.toxopid.legSplashRange = 0;
         UnitTypes.tecta.legSplashDamage = UnitTypes.tecta.legSplashRange = 0;
         UnitTypes.collaris.legSplashDamage = UnitTypes.collaris.legSplashRange = 0;
+
+        // No crush damage
+        UnitTypes.vanquish.crushDamage = 0;
+        UnitTypes.conquer.crushDamage = 0;
+        // Latum and Renale also have it, but it is their only form of damage and won't be removed
+    }
+
+    @EventHandler()
+    void onGameStart(final EventType.StateChangeEvent event) {
+        if (!(event.from == GameState.State.menu && event.to == GameState.State.playing)) {
+            return;
+        }
+        Vars.state.rules.waveTeam.rules().unitHealthMultiplier =
+                this.config.get().initialHealthMultiplier();
+        Call.setRules(Vars.state.rules);
+        Vars.state.rules.waveTeam.data().units.forEach(u -> u.controller(new TowerAI()));
     }
 
     @EventHandler
@@ -190,11 +208,12 @@ final class TowerLogic implements PluginListener {
     void onUnitDeath(final EventType.UnitDestroyEvent event) {
         if (event.unit.team() != Vars.state.rules.waveTeam) return;
 
+        final var config = this.config.get();
         final var items = new ItemSeq();
-        final var data = this.config.get().units().get(event.unit.type());
+        final var data = config.units().get(event.unit.type());
         if (data == null) return;
 
-        final var drops = Objects.requireNonNull(this.config.get().drops().get(data.drop()));
+        final var drops = Objects.requireNonNull(config.drops().get(data.drop()));
         for (final var drop : drops) drop.apply(items);
 
         final var core = Vars.state.rules.defaultTeam.core();
@@ -203,10 +222,10 @@ final class TowerLogic implements PluginListener {
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
         if (data.downgrade().isPresent()) {
-            for (int i = 0; i < this.config.get().mitosis(); i++) {
+            for (int i = 0; i < config.mitosis(); i++) {
                 final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
-                Tmp.v1.rnd(Vars.tilesize * 2);
-                unit.set(event.unit.x() + Tmp.v1.x, event.unit.y() + Tmp.v1.y);
+                Tmp.v1.rnd(2 * Vars.tilesize);
+                unit.set(event.unit.x + Tmp.v1.x, event.unit.y + Tmp.v1.y);
                 unit.rotation(event.unit.rotation());
                 unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
                 unit.controller(new TowerAI());
@@ -219,6 +238,8 @@ final class TowerLogic implements PluginListener {
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
     void onEnemyHealthMultiply() {
         if (!Vars.state.isPlaying()) return;
+        // Don't increase health multiplier if there are no units on alive
+        if (Vars.state.rules.waveTeam.data().unitCount >= 0) return;
         final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
         final var next = prev * this.config.get().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
@@ -233,7 +254,7 @@ final class TowerLogic implements PluginListener {
             for (int j = ry - 1; j <= ry + block.size; j++) {
                 final var at = Vars.world.tile(i, j);
                 if (at != null && hasCoreBlock(at)) {
-                    Call.label(player.con, "[scarlet]" + Iconc.cancel, 1F, i, j);
+                    Call.label(player.con, "[scarlet]" + Iconc.cancel, 1F, tile.worldx(), tile.worldy());
                     return false;
                 }
             }

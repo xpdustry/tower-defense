@@ -25,35 +25,6 @@
  */
 package com.xpdustry.tower;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import mindustry.type.UnitType;
-import mindustry.world.Block;
-import org.github.gestalt.config.annotations.Config;
-
-public record TowerConfig(
-        float initialHealthMultiplier,
-        float healthMultiplier,
-        int mitosis,
-        @Config(path = "unit-bind") boolean ubind,
-        Set<Block> blockWhitelist,
-        Map<String, List<TowerDrop>> drops,
-        Map<UnitType, UnitData> units) {
-    public TowerConfig {
-        if (initialHealthMultiplier <= 0F) {
-            throw new IllegalArgumentException("initial-health must be higher than 0");
-        }
-        if (healthMultiplier < 1F) {
-            throw new IllegalArgumentException("health-multiplier can't be lower than 1");
-        }
-        for (final var data : units.values()) {
-            if (!drops.containsKey(data.drop)) {
-                throw new IllegalArgumentException("drops do not exist: " + data.drop);
-            }
-        }
-    }
-
-    public record UnitData(String drop, Optional<UnitType> downgrade) {}
+public enum TowerConfigReloadEvent {
+    INSTANCE
 }
