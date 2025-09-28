@@ -9,7 +9,7 @@ errorprone-gradle = "4.3.0"
 # utilities
 slf4md = "1.1.1"
 distributor = "4.2.0"
-snakeyaml = "2.4"
+snakeyaml = "2.5"
 gestalt = "0.36.0"
 
 # static analysis
