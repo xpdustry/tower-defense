@@ -9,7 +9,7 @@ errorprone-gradle = "4.3.0"
 # utilities
 slf4md = "1.1.1"
 distributor = "4.2.0"
-snakeyaml = "2.4"
+snakeyaml = "2.5"
 gestalt = "0.36.0"
 
 # static analysis
@@ -20,7 +20,7 @@ jspecify = "1.0.0"
 [libraries]
 # utilities
 distributor-api = { module = "com.xpdustry:distributor-common-api", version.ref = "distributor" }
-snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml"}
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 gestalt-core = { module = "com.github.gestalt-config:gestalt-core", version.ref = "gestalt" }
 
 # static analysis

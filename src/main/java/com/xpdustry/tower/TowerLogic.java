@@ -26,10 +26,11 @@
 package com.xpdustry.tower;
 
 import arc.graphics.Color;
+import arc.math.Mathf;
+import arc.math.geom.Vec2;
 import arc.struct.IntMap;
 import arc.util.Interval;
 import arc.util.Time;
-import arc.util.Tmp;
 import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.annotation.EventHandler;
 import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
@@ -44,6 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.zip.InflaterInputStream;
 import mindustry.Vars;
+import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
@@ -69,17 +71,20 @@ import static com.xpdustry.distributor.api.component.TextComponent.text;
 final class TowerLogic implements PluginListener {
 
     private static final Logger logger = LoggerFactory.getLogger(TowerLogic.class);
+    private static final int MAX_SPAWN_SEARCH_RADIUS = 4;
+
     private final TowerConfigProvider config;
+    private final TowerPathfinder pathfinder;
     private final IntMap<Interval> messageRateLimits = new IntMap<>();
 
-    public TowerLogic(final TowerConfigProvider config) {
+    public TowerLogic(final TowerConfigProvider config, final TowerPathfinder pathfinder) {
         this.config = config;
+        this.pathfinder = pathfinder;
     }
 
     @Override
     public void onPluginInit() {
         // TODO Store modifications somewhere to not make these changes permanent
-        // You removed the undo-ing on exit >:(
 
         // Make sure all enemy units are targetable and hittable and count to waves
         UnitTypes.emanate.targetable = UnitTypes.emanate.hittable = UnitTypes.emanate.isEnemy = true;
@@ -87,7 +92,7 @@ final class TowerLogic implements PluginListener {
         UnitTypes.incite.targetable = UnitTypes.incite.hittable = UnitTypes.incite.isEnemy = true;
         UnitTypes.mono.isEnemy = true;
 
-        // Weapon qol so units dont damage things they shouldnt
+        // Weapon qol so units don't damage things they shouldn't
         UnitTypes.crawler.weapons.first().shootOnDeath = false;
         UnitTypes.navanax.weapons.each(w -> {
             if (w.name.equalsIgnoreCase("plasma-laser-mount")) {
@@ -113,9 +118,6 @@ final class TowerLogic implements PluginListener {
         if (!(event.from == GameState.State.menu && event.to == GameState.State.playing)) {
             return;
         }
-        Vars.state.rules.waveTeam.rules().unitHealthMultiplier =
-                this.config.get().initialHealthMultiplier();
-        Call.setRules(Vars.state.rules);
         Vars.state.rules.waveTeam.data().units.forEach(u -> u.controller(new TowerAI()));
     }
 
@@ -222,10 +224,19 @@ final class TowerLogic implements PluginListener {
         Distributor.get().getEventBus().post(new EnemyDropEvent(event.unit.x(), event.unit.y(), items));
 
         if (data.downgrade().isPresent()) {
+            final var spawn = new Vec2();
             for (int i = 0; i < config.mitosis(); i++) {
+
+                // Find a valid location first
+                spawn.rnd(2 * Vars.tilesize);
+                spawn.add(event.unit);
+                if (!this.isValidSpawn(Mathf.floor(spawn.x), Mathf.floor(spawn.y))) {
+                    this.findNearestValidSpawn(event.unit.tileX(), event.unit.tileY(), spawn);
+                    spawn.scl(Vars.tilesize);
+                }
+
                 final var unit = data.downgrade().get().create(Vars.state.rules.waveTeam);
-                Tmp.v1.rnd(2 * Vars.tilesize);
-                unit.set(event.unit.x + Tmp.v1.x, event.unit.y + Tmp.v1.y);
+                unit.set(spawn);
                 unit.rotation(event.unit.rotation());
                 unit.apply(StatusEffects.slow, (float) MindustryTimeUnit.TICKS.convert(5L, MindustryTimeUnit.SECONDS));
                 unit.controller(new TowerAI());
@@ -237,9 +248,7 @@ final class TowerLogic implements PluginListener {
 
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
     void onEnemyHealthMultiply() {
-        if (!Vars.state.isPlaying()) return;
-        // Don't increase health multiplier if there are no units on alive
-        if (Vars.state.rules.waveTeam.data().unitCount >= 0) return;
+        if (!Vars.state.isPlaying() || Vars.state.rules.waveTeam.data().unitCount >= 0) return;
         final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
         final var next = prev * this.config.get().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
@@ -265,5 +274,43 @@ final class TowerLogic implements PluginListener {
     private boolean hasCoreBlock(final Tile tile) {
         return (tile.block() instanceof CoreBlock
                 || (tile.build instanceof StorageBlock.StorageBuild build && build.linkedCore != null));
+    }
+
+    /** @author JasonP01 */
+    private void findNearestValidSpawn(final int x, final int y, final Vec2 spawn) {
+        if (this.isValidSpawn(x, y)) {
+            spawn.set(x, y);
+            return;
+        }
+        for (int radius = 1; radius <= MAX_SPAWN_SEARCH_RADIUS; radius++) {
+            for (int i = -radius; i <= radius; i++) {
+                if (this.isValidSpawn(x + i, y + radius)) {
+                    spawn.set(x + i, y + radius);
+                    return;
+                }
+                if (this.isValidSpawn(x + i, y - radius)) {
+                    spawn.set(x + i, y - radius);
+                    return;
+                }
+                if (i > -radius && i < radius) {
+                    if (this.isValidSpawn(x + radius, y + i)) {
+                        spawn.set(x + radius, y + i);
+                        return;
+                    }
+                    if (this.isValidSpawn(x - radius, y + i)) {
+                        spawn.set(x - radius, y + i);
+                        return;
+                    }
+                }
+            }
+        }
+        spawn.set(x, y);
+    }
+
+    private boolean isValidSpawn(final int x, final int y) {
+        final var tile = Vars.world.tile(x, y);
+        return tile != null
+                && this.pathfinder.towerPassableFloors.contains(tile.floorID())
+                && tile.block().id == Blocks.air.id;
     }
 }

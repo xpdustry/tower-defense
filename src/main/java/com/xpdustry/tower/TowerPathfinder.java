@@ -45,7 +45,7 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
 
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
-    private final IntSet towerPassableFloors = new IntSet();
+    final IntSet towerPassableFloors = new IntSet();
     private final IntSet towerBlockWhitelist = new IntSet();
     private final TowerConfigProvider config;
 

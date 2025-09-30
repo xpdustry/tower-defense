@@ -44,12 +44,17 @@ public final class TowerPlugin extends AbstractMindustryPlugin {
     public void onInit() {
         final var config = new TowerConfigProvider(this);
         this.addListener(config);
-        this.addListener(new TowerLogic(config));
         final var pathfinder = new TowerPathfinder(config);
         Vars.pathfinder = pathfinder;
         this.addListener(pathfinder);
+        this.addListener(new TowerLogic(config, pathfinder));
         this.addListener(new TowerRenderer());
         this.addListener(new TowerCommands(this));
+    }
+
+    @Override
+    public void onLoad() {
+        this.getLogger().info("Successfully loaded XP Tower plugin. Kill them bloons!");
     }
 
     @Override
