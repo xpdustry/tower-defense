@@ -27,7 +27,6 @@ package com.xpdustry.tower;
 
 import arc.struct.IntSet;
 import com.xpdustry.distributor.api.annotation.EventHandler;
-import com.xpdustry.distributor.api.annotation.PlayerActionHandler;
 import com.xpdustry.distributor.api.collection.MindustryCollections;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.util.Priority;
@@ -35,10 +34,6 @@ import mindustry.Vars;
 import mindustry.ai.Pathfinder;
 import mindustry.content.Blocks;
 import mindustry.game.EventType;
-import mindustry.gen.Call;
-import mindustry.gen.Iconc;
-import mindustry.net.Administration;
-import mindustry.world.Block;
 import mindustry.world.Tile;
 
 final class TowerPathfinder extends Pathfinder implements PluginListener {
@@ -46,16 +41,9 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     private static final int BIT_MASK_TOWER_PASSABLE = (1 << 30);
 
     final IntSet towerPassableFloors = new IntSet();
-    private final IntSet towerBlockWhitelist = new IntSet();
-    private final TowerConfigProvider config;
-
-    public TowerPathfinder(final TowerConfigProvider config) {
-        this.config = config;
-    }
 
     @EventHandler
     void onServerLoadEvent(final EventType.ServerLoadEvent event) {
-        // TODO This trick may not be able to support modded units with custom path types
         MindustryCollections.mutableList(Pathfinder.costTypes).replaceAll(TowerPathCostWrapper::new);
     }
 
@@ -72,41 +60,10 @@ final class TowerPathfinder extends Pathfinder implements PluginListener {
     private void onGenericLoadEvent() {
         this.towerPassableFloors.clear();
         for (final var tile : Vars.world.tiles) {
-            if (tile.overlay().equals(Blocks.spawn)) {
+            if (tile.overlay().id == Blocks.spawn.id) {
                 this.towerPassableFloors.add(tile.floor().id);
             }
         }
-    }
-
-    @EventHandler
-    void onConfigUpdate(final TowerConfigReloadEvent event) {
-        this.towerBlockWhitelist.clear();
-        for (final var block : this.config.get().blockWhitelist()) {
-            this.towerBlockWhitelist.add(block.id);
-        }
-    }
-
-    @PlayerActionHandler
-    boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
-        if (action.type == Administration.ActionType.placeBlock
-                || action.type == Administration.ActionType.dropPayload) {
-            final var block =
-                    action.block != null ? action.block : action.payload.content() instanceof Block b ? b : Blocks.air;
-            if (this.towerBlockWhitelist.contains(block.id) || block.id == Blocks.air.id) {
-                return true;
-            }
-            final var covered = new IntSet();
-            action.tile.getLinkedTilesAs(block, tile -> covered.add(tile.floor().id));
-            final var iterator = covered.iterator();
-            while (iterator.hasNext) {
-                if (towerPassableFloors.contains(iterator.next())) {
-                    Call.label(
-                            action.player.con, "[scarlet]" + Iconc.cancel, 1F, action.tile.x * 8f, action.tile.y * 8f);
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override

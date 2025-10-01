@@ -29,6 +29,7 @@ import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
 import arc.struct.IntMap;
+import arc.struct.IntSet;
 import arc.util.Interval;
 import arc.util.Time;
 import com.xpdustry.distributor.api.Distributor;
@@ -76,6 +77,7 @@ final class TowerLogic implements PluginListener {
     private final TowerConfigProvider config;
     private final TowerPathfinder pathfinder;
     private final IntMap<Interval> messageRateLimits = new IntMap<>();
+    private final IntSet towerBlockWhitelist = new IntSet();
 
     public TowerLogic(final TowerConfigProvider config, final TowerPathfinder pathfinder) {
         this.config = config;
@@ -114,6 +116,14 @@ final class TowerLogic implements PluginListener {
     }
 
     @EventHandler
+    void onConfigUpdate(final TowerConfigReloadEvent event) {
+        this.towerBlockWhitelist.clear();
+        for (final var block : this.config.get().blockWhitelist()) {
+            this.towerBlockWhitelist.add(block.id);
+        }
+    }
+
+    @EventHandler
     void onGameStart(final EventType.StateChangeEvent event) {
         if (!(event.from == GameState.State.menu && event.to == GameState.State.playing)) {
             return;
@@ -123,19 +133,43 @@ final class TowerLogic implements PluginListener {
 
     @EventHandler
     void onPlayerQuit(final EventType.PlayerLeave event) {
-        messageRateLimits.remove(event.player.id());
+        this.messageRateLimits.remove(event.player.id());
     }
 
     @PlayerActionHandler
     boolean onCoreBuildInteract(final Administration.PlayerAction action) {
         return switch (action.type) {
-            case depositItem, withdrawItem -> !hasCoreBlock(action.tile);
-            case placeBlock -> hasNoNearbyCore(action.block, action.tile, action.player);
+            case depositItem, withdrawItem -> !this.hasCoreBlock(action.tile);
+            case placeBlock -> this.hasNoNearbyCore(action.block, action.tile, action.player);
             case dropPayload ->
                 !(action.payload.content() instanceof Block block)
-                        || hasNoNearbyCore(block, action.tile, action.player);
+                        || this.hasNoNearbyCore(block, action.tile, action.player);
             default -> true;
         };
+    }
+
+    @PlayerActionHandler
+    boolean onInteractWithTowerPassableFloor(final Administration.PlayerAction action) {
+        final Block block;
+        switch (action.type) {
+            case placeBlock -> block = action.block;
+            case dropPayload -> block = action.payload.content() instanceof Block b ? b : Blocks.air;
+            default -> block = null;
+        }
+        if (block == null || this.towerBlockWhitelist.contains(block.id) || block.id == Blocks.air.id) {
+            return true;
+        }
+        final var covered = new IntSet();
+        action.tile.getLinkedTilesAs(block, tile -> covered.add(tile.floor().id));
+        final var iterator = covered.iterator();
+        while (iterator.hasNext) {
+            if (this.pathfinder.towerPassableFloors.contains(iterator.next())) {
+                Call.label(
+                        action.player.con, "[scarlet]" + Iconc.cancel, 1F, action.tile.worldx(), action.tile.worldy());
+                return false;
+            }
+        }
+        return true;
     }
 
     @PlayerActionHandler
@@ -181,7 +215,9 @@ final class TowerLogic implements PluginListener {
 
             for (final var instruction : assembler.instructions) {
                 if (instruction instanceof LExecutor.UnitBindI) {
-                    if (messageRateLimits.get(action.player.id(), Interval::new).get(Time.toSeconds)) {
+                    if (this.messageRateLimits
+                            .get(action.player.id(), Interval::new)
+                            .get(Time.toSeconds)) {
                         Distributor.get()
                                 .getAudienceProvider()
                                 .getPlayer(action.player)

@@ -35,6 +35,8 @@ import com.xpdustry.distributor.api.component.style.ComponentColor;
 import com.xpdustry.distributor.api.key.KeyContainer;
 import com.xpdustry.distributor.api.plugin.PluginListener;
 import com.xpdustry.distributor.api.scheduler.MindustryTimeUnit;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import mindustry.Vars;
@@ -85,16 +87,15 @@ final class TowerRenderer implements PluginListener {
 
     @EventHandler
     void onReset(final EventType.ResetEvent event) {
-        wrappers.clear();
+        this.wrappers.clear();
     }
 
     @EventHandler
     void onTowerDrop(final EnemyDropEvent event) {
-        @SuppressWarnings("JdkObsolete")
-        final LinkedList<LabelWrapper> closest = new LinkedList<>();
-        for (final var wrapper : wrappers) {
+        final Deque<LabelWrapper> closest = new ArrayDeque<>();
+        for (final var wrapper : this.wrappers) {
             if (wrapper.label.dst(event.x(), event.y()) <= 3 * Vars.tilesize && wrapper.items.total <= 3000) {
-                closest.add(wrapper);
+                closest.push(wrapper);
             }
         }
         if (closest.isEmpty()) {
@@ -102,10 +103,10 @@ final class TowerRenderer implements PluginListener {
             wrapper.label.flags = (byte) (WorldLabel.flagBackground | WorldLabel.flagOutline);
             wrapper.label.fontSize = 2F;
             wrapper.update(event);
-            wrappers.add(wrapper);
+            this.wrappers.add(wrapper);
         } else {
             final var first = closest.removeFirst();
-            wrappers.removeAll(closest);
+            this.wrappers.removeAll(closest);
             for (final var wrapper : closest) {
                 first.items.add(wrapper.items);
                 wrapper.remove();
@@ -116,7 +117,7 @@ final class TowerRenderer implements PluginListener {
 
     @TaskHandler(interval = 1L, unit = MindustryTimeUnit.SECONDS)
     void onStaleLabelRemoval() {
-        final var iterator = wrappers.iterator();
+        final var iterator = this.wrappers.iterator();
         while (iterator.hasNext()) {
             final var wrapper = iterator.next();
             if (wrapper.age() >= 2) {
@@ -132,17 +133,17 @@ final class TowerRenderer implements PluginListener {
         private long lastUpdate = System.currentTimeMillis();
 
         long age() {
-            return (System.currentTimeMillis() - lastUpdate) / 1000L;
+            return (System.currentTimeMillis() - this.lastUpdate) / 1000L;
         }
 
         void update(final EnemyDropEvent event) {
-            label.set(event.x(), event.y());
-            items.add(event.items());
-            label.text = ComponentStringBuilder.mindustry(KeyContainer.empty())
+            this.label.set(event.x(), event.y());
+            this.items.add(event.items());
+            this.label.text = ComponentStringBuilder.mindustry(KeyContainer.empty())
                     .append(components()
                             .modify(builder -> {
                                 final var color = ComponentColor.from(Vars.state.rules.defaultTeam.color);
-                                items.each((item, amount) -> {
+                                this.items.each((item, amount) -> {
                                     builder.append(text('+', color));
                                     builder.append(number(amount, color));
                                     builder.append(space());
@@ -152,12 +153,12 @@ final class TowerRenderer implements PluginListener {
                             })
                             .build())
                     .toString();
-            label.add();
-            lastUpdate = System.currentTimeMillis();
+            this.label.add();
+            this.lastUpdate = System.currentTimeMillis();
         }
 
         void remove() {
-            label.remove();
+            this.label.remove();
             Call.removeWorldLabel(label.id);
         }
     }
