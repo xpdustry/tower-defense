@@ -31,7 +31,6 @@ import com.xpdustry.distributor.api.Distributor;
 import com.xpdustry.distributor.api.key.CTypeKey;
 import com.xpdustry.distributor.api.plugin.MindustryPlugin;
 import com.xpdustry.distributor.api.plugin.PluginListener;
-import com.xpdustry.tower.config.PatchedRecordDecoder;
 import com.xpdustry.tower.config.SealedConfig;
 import com.xpdustry.tower.config.SnakeYamlLoader;
 import java.nio.file.Files;
@@ -104,7 +103,7 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
                         .setPrefix("XP_TOWER_DEFENSE")
                         .build())
                 .setTreatMissingDiscretionaryValuesAsErrors(false)
-                .addDecoder(new PatchedRecordDecoder())
+                .addDecoder(new RecordDecoder())
                 .addPathMapper(new KebabCasePathMapper())
                 .addConfigLoader(new SnakeYamlLoader())
                 .addConfigLoader(new EnvironmentVarsLoader())
@@ -115,7 +114,6 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
                 .addDecoder(new ListDecoder())
                 .addDecoder(new SetDecoder())
                 .addDecoder(new IntegerDecoder())
-                .addDecoder(new OptionalDecoder())
                 .addDecoder(new SealedConfigDecoder());
         for (final var key : CTypeKey.ALL) {
             builder.addDecoder(new MindustryContentDecoder<>(key));
