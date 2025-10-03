@@ -55,6 +55,9 @@ import static com.xpdustry.distributor.api.component.TextComponent.text;
 
 final class TowerRenderer implements PluginListener {
 
+    private static final int MAX_DROP_LABEL_TRAVEL_DISTANCE = 3 * Vars.tilesize;
+    private static final int MAX_DROP_LABEL_ITEM_COUNT = 3000;
+
     private static final IntMap<String> ITEM_ICONS = new IntMap<>();
 
     static {
@@ -73,8 +76,7 @@ final class TowerRenderer implements PluginListener {
 
     @EventHandler
     void onEnemyPowerIncreaseEvent(final PowerIncreaseEvent.Health event) {
-        if (Mathf.floor(event.next()) > Mathf.floor(event.prev())
-                && event.team().equals(Vars.state.rules.waveTeam)) {
+        if (Mathf.floor(event.next()) > Mathf.floor(event.prev()) && event.team().id == Vars.state.rules.waveTeam.id) {
             Distributor.get()
                     .getAudienceProvider()
                     .getTeam(Vars.state.rules.defaultTeam)
@@ -83,7 +85,7 @@ final class TowerRenderer implements PluginListener {
                             text(">>>", ComponentColor.CYAN),
                             space(),
                             text("Enemy Health Multiplier has increased to x"),
-                            number((int) event.next())));
+                            number(Mathf.floor(event.next()))));
         }
     }
 
@@ -96,7 +98,8 @@ final class TowerRenderer implements PluginListener {
     void onTowerDrop(final EnemyDropEvent event) {
         final Deque<LabelWrapper> closest = new ArrayDeque<>();
         for (final var wrapper : this.wrappers) {
-            if (wrapper.label.dst(event.x(), event.y()) <= 3 * Vars.tilesize && wrapper.items.total <= 3000) {
+            if (wrapper.label.dst(event.x(), event.y()) <= MAX_DROP_LABEL_TRAVEL_DISTANCE
+                    && wrapper.items.total <= MAX_DROP_LABEL_ITEM_COUNT) {
                 closest.push(wrapper);
             }
         }
