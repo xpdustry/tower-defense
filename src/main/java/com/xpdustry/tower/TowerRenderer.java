@@ -25,6 +25,7 @@
  */
 package com.xpdustry.tower;
 
+import arc.math.Mathf;
 import arc.struct.IntMap;
 import arc.util.Strings;
 import com.xpdustry.distributor.api.Distributor;
@@ -72,7 +73,8 @@ final class TowerRenderer implements PluginListener {
 
     @EventHandler
     void onEnemyPowerIncreaseEvent(final PowerIncreaseEvent.Health event) {
-        if (((int) event.next() > (int) event.prev()) && event.team().equals(Vars.state.rules.waveTeam)) {
+        if (Mathf.floor(event.next()) > Mathf.floor(event.prev())
+                && event.team().equals(Vars.state.rules.waveTeam)) {
             Distributor.get()
                     .getAudienceProvider()
                     .getTeam(Vars.state.rules.defaultTeam)

@@ -284,7 +284,7 @@ final class TowerLogic implements PluginListener {
 
     @TaskHandler(delay = 1L, interval = 1L, unit = MindustryTimeUnit.MINUTES)
     void onEnemyHealthMultiply() {
-        if (!Vars.state.isPlaying() || Vars.state.rules.waveTeam.data().unitCount >= 0) return;
+        if (!Vars.state.isPlaying() || Vars.state.rules.waveTeam.data().unitCount == 0) return;
         final var prev = Vars.state.rules.waveTeam.rules().unitHealthMultiplier;
         final var next = prev * this.config.get().healthMultiplier();
         Vars.state.rules.waveTeam.rules().unitHealthMultiplier = next;
