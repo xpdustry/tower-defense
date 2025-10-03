@@ -53,6 +53,7 @@ import mindustry.content.UnitTypes;
 import mindustry.core.GameState;
 import mindustry.game.EventType;
 import mindustry.gen.Call;
+import mindustry.gen.Groups;
 import mindustry.gen.Iconc;
 import mindustry.gen.Player;
 import mindustry.logic.LAssembler;
@@ -128,7 +129,8 @@ final class TowerLogic implements PluginListener {
         if (!(event.from == GameState.State.menu && event.to == GameState.State.playing)) {
             return;
         }
-        Vars.state.rules.waveTeam.data().units.forEach(u -> u.controller(new TowerAI()));
+        // Vars.state.rules.waveTeam.data().units cannot be used because team units are not indexed yet
+        Groups.unit.each(u -> u.team().id == Vars.state.rules.waveTeam.id, u -> u.controller(new TowerAI()));
     }
 
     @EventHandler
