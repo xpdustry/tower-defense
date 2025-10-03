@@ -25,7 +25,6 @@
  */
 package com.xpdustry.tower;
 
-import com.xpdustry.tower.config.SealedConfig;
 import java.util.List;
 import mindustry.type.Item;
 import mindustry.type.ItemSeq;

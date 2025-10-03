@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.xpdustry.tower.config;
+package com.xpdustry.tower;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -52,7 +52,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.*;
 
 // https://github.com/gestalt-config/gestalt/blob/8b5f7dd9f74f1899e44719df29c17543e5a68597/gestalt-yaml/src/main/java/org/github/gestalt/config/yaml/YamlLoader.java
-public final class SnakeYamlLoader implements ConfigLoader {
+final class SnakeYamlLoader implements ConfigLoader {
 
     private final Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
     private final SentenceLexer lexer = new PathLexer();

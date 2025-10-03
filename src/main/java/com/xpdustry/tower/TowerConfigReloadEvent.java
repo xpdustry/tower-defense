@@ -25,6 +25,6 @@
  */
 package com.xpdustry.tower;
 
-public enum TowerConfigReloadEvent {
+enum TowerConfigReloadEvent {
     INSTANCE
 }
