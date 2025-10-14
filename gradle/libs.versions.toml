@@ -1,7 +1,7 @@
 [versions]
 # plugins
 shadow = "9.2.2"
-indra = "3.2.0"
+indra = "4.0.0"
 toxopid = "4.1.2"
 spotless = "8.0.0"
 errorprone-gradle = "4.3.0"
