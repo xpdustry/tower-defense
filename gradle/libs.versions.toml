@@ -13,7 +13,7 @@ snakeyaml = "2.5"
 gestalt = "0.36.0"
 
 # static analysis
-errorprone-core = "2.42.0"
+errorprone-core = "2.47.0"
 nullaway = "0.12.10"
 jspecify = "1.0.0"
 
