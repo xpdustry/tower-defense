@@ -102,6 +102,7 @@ final class TowerConfigProvider implements PluginListener, Supplier<TowerConfig>
                 .addDecoder(new ListDecoder())
                 .addDecoder(new SetDecoder())
                 .addDecoder(new IntegerDecoder())
+                .addDecoder(new OptionalDecoder())
                 .addDecoder(new SealedConfigDecoder());
         for (final var key : CTypeKey.ALL) {
             builder.addDecoder(new MindustryContentDecoder<>(key));
